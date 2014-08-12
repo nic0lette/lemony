@@ -152,6 +152,7 @@ std:
         "/" { yylval.int_value = '/'; return TOKEN_DIV; }
         "(" { yylval.int_value = '('; return TOKEN_LPAREN; }
         ")" { yylval.int_value = ')'; return TOKEN_RPAREN; }
+		";" { yylval.int_value = ';'; return TOKEN_SEMI; }
         WS {
             goto std;
         }

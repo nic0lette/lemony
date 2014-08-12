@@ -5,9 +5,18 @@ typedef union {
     int int_value;
 } YYSTYPE;
 
-struct ParserState {
+typedef struct {
+	int function;
     int result;
-    ParserState() :result(0) {
+	YYSTYPE lhs;
+	YYSTYPE rhs;
+} BinaryFunction;
+
+class ParserState {
+public:
+    int result;
+	int eval;
+    ParserState() : result(0) {
     }
 };
 

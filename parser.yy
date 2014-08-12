@@ -22,11 +22,12 @@
 
 %start_symbol program
 
-program ::= expr(A). {
+program ::= expr(A) SEMI. {
     state->result = A.int_value;
+	state->eval = 1;
 }
 
-expr(A) ::= primary_expression(B). {
+expr(A) ::= INT(B). {
     A.int_value = B.int_value;
 }
 expr(A) ::= expr(B) SUB expr(C). {
@@ -42,10 +43,6 @@ expr(A) ::= expr(B) MUL expr(C). {
     A.int_value = B.int_value * C.int_value;
 }
 expr(A) ::= LPAREN expr(B) RPAREN. {
-    A.int_value = B.int_value;
-}
-
-primary_expression(A) ::= INT(B). {
     A.int_value = B.int_value;
 }
 
