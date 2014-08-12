@@ -1,7 +1,7 @@
-all: mycalc
+all: lemony
 
-mycalc: scanner.h parser.c main.cc
-	g++ -o mycalc main.cc
+lemony: scanner.h parser.c main.cc
+	g++ -o lemony main.cc
 
 parser.c: parser.yy
 	lemon parser.yy
