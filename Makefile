@@ -1,6 +1,6 @@
 all: mycalc
 
-mycalc: scanner.h parser.c
+mycalc: scanner.h parser.c main.cc
 	g++ -o mycalc main.cc
 
 parser.c: parser.yy
