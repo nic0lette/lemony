@@ -17,7 +17,11 @@ int main() {
     ParserState state;
     // scanner.scan return 0 when get EOF.
     while ((tokenID = scanner.scan(yylval)) != 0) {
-        // printf("GET TOKEN: %d\n", tokenID);
+		if (tokenID == TOKEN_INT) {
+			printf("GET INT: %d\n", yylval.int_value);
+		} else {
+	        printf("GET TOKEN: %d (%c)\n", tokenID, yylval.int_value);
+		}
         Parse(pParser, tokenID, yylval, &state);
     }
     Parse(pParser, 0, yylval, &state);

@@ -29,17 +29,20 @@ program ::= expr(A). {
 expr(A) ::= primary_expression(B). {
     A.int_value = B.int_value;
 }
-expr(A) ::= expr(B) SUB primary_expression(C). {
+expr(A) ::= expr(B) SUB expr(C). {
     A.int_value = B.int_value - C.int_value;
 }
-expr(A) ::= expr(B) ADD primary_expression(C). {
+expr(A) ::= expr(B) ADD expr(C). {
     A.int_value = B.int_value + C.int_value;
 }
-expr(A) ::= expr(B) DIV primary_expression(C). {
+expr(A) ::= expr(B) DIV expr(C). {
     A.int_value = B.int_value / C.int_value;
 }
-expr(A) ::= expr(B) MUL primary_expression(C). {
+expr(A) ::= expr(B) MUL expr(C). {
     A.int_value = B.int_value * C.int_value;
+}
+expr(A) ::= LPAREN expr(B) RPAREN. {
+    A.int_value = B.int_value;
 }
 
 primary_expression(A) ::= INT(B). {

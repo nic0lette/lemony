@@ -2,6 +2,7 @@
 #define CALC_SCANNER_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <string>
 #include <sstream>
@@ -94,12 +95,31 @@ public:
     std::string text() {
         return std::string( m_token, m_token+length() );
     }
+	char * textAsChar() {
+		char * a = new char[length() + 1];
+		a[length()]='\0';
+		memcpy(a, m_token, length());
+		return a;
+	}
     int length() {
         return (m_cursor-m_token);
     }
     int lineno() {
         return m_lineno;
     }
+	int intToken() {
+		// Convert the string token to a char[]
+		char * token = this->textAsChar();
+		
+		// Parse the hex value
+        int value = (int)strtol(token, NULL, 0);
+		
+		// Free the memory and return the token
+		delete [] token;
+		
+		// Done!
+		return value;
+	}
  
     int scan(YYSTYPE& yylval) {
 std:
@@ -117,18 +137,21 @@ std:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
-        INTEGER                = [1-9][0-9]*;
+        INTEGER_OCT            = [0][0-7]*;
+        INTEGER_DEC            = [1-9][0-9]*;
+        INTEGER_HEX            = [0][x][0-9,a-f,A-F]*;
         WS                     = [ \r\n\t\f];
         ANY_CHARACTER          = [^];
 
-        INTEGER {
-            yylval.int_value = atoi(this->text().c_str());
-            return TOKEN_INT;
-        }
-        "+" { return TOKEN_ADD; }
-        "-" { return TOKEN_SUB; }
-        "*" { return TOKEN_MUL; }
-        "/" { return TOKEN_DIV; }
+        INTEGER_OCT { yylval.int_value = this->intToken(); return TOKEN_INT; }
+        INTEGER_DEC { yylval.int_value = this->intToken(); return TOKEN_INT; }
+        INTEGER_HEX { yylval.int_value = this->intToken(); return TOKEN_INT; }
+        "+" { yylval.int_value = '+'; return TOKEN_ADD; }
+        "-" { yylval.int_value = '-'; return TOKEN_SUB; }
+        "*" { yylval.int_value = '*'; return TOKEN_MUL; }
+        "/" { yylval.int_value = '/'; return TOKEN_DIV; }
+        "(" { yylval.int_value = '('; return TOKEN_LPAREN; }
+        ")" { yylval.int_value = ')'; return TOKEN_RPAREN; }
         WS {
             goto std;
         }
