@@ -47,7 +47,9 @@ int main() {
 		}
     }
 
+    Parse(pParser, tokenID, yylval, &state);
 	printf("RESULT: %d\n", state.result);
+	
 	ParseFree(pParser, free);
     return 0;
 }
