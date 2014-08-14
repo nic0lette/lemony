@@ -5,13 +5,6 @@ typedef union {
     int int_value;
 } YYSTYPE;
 
-typedef struct {
-	int function;
-    int result;
-	YYSTYPE lhs;
-	YYSTYPE rhs;
-} BinaryFunction;
-
 class ParserState {
 public:
     int result;
