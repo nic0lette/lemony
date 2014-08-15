@@ -120,8 +120,8 @@ public:
 		// Done!
 		return value;
 	}
- 
-    int scan(YYSTYPE& yylval) {
+	
+    int scan(BaseNode * & yylval) {
 std:
         m_token = m_cursor;
  
@@ -143,16 +143,16 @@ std:
         WS                     = [ \r\n\t\f];
         ANY_CHARACTER          = [^];
 
-        INTEGER_OCT { yylval.int_value = this->intToken(); return TOKEN_INT; }
-        INTEGER_DEC { yylval.int_value = this->intToken(); return TOKEN_INT; }
-        INTEGER_HEX { yylval.int_value = this->intToken(); return TOKEN_INT; }
-        "+" { yylval.int_value = '+'; return TOKEN_ADD; }
-        "-" { yylval.int_value = '-'; return TOKEN_SUB; }
-        "*" { yylval.int_value = '*'; return TOKEN_MUL; }
-        "/" { yylval.int_value = '/'; return TOKEN_DIV; }
-        "(" { yylval.int_value = '('; return TOKEN_LPAREN; }
-        ")" { yylval.int_value = ')'; return TOKEN_RPAREN; }
-		";" { yylval.int_value = ';'; return TOKEN_SEMI; }
+        INTEGER_OCT { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
+        INTEGER_DEC { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
+        INTEGER_HEX { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
+        "+" { return TOKEN_ADD; }
+        "-" { return TOKEN_SUB; }
+        "*" { return TOKEN_MUL; }
+        "/" { return TOKEN_DIV; }
+        "(" { return TOKEN_LPAREN; }
+        ")" { return TOKEN_RPAREN; }
+		";" { return TOKEN_SEMI; }
         WS {
             goto std;
         }

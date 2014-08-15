@@ -1,13 +1,16 @@
+#include <iostream>
 #include <sstream>
 #include <cassert>
 #include <cstdlib>
 #include "scanner.h"
 #include "parser.c"
 
+using namespace std;
+
 #define DEBUG 0
 
 int main() {
-    YYSTYPE yylval;
+    BaseNode * yylval;
     Scanner scanner(&std::cin);
     void * pParser = ParseAlloc(malloc);
     int tokenID;
@@ -23,19 +26,11 @@ int main() {
 	
     // scanner.scan return 0 when get EOF.
     while ((tokenID = scanner.scan(yylval)) != 0) {
-		
-#if DEBUG		
-		if (tokenID == TOKEN_INT) {
-			printf("GET INT: %d\n", yylval.int_value);
-		} else {
-	        printf("GET TOKEN: %d (%c)\n", tokenID, yylval.int_value);
-		}
-#endif
-		
         Parse(pParser, tokenID, yylval, &state);
 		
 		if (state.eval) {
-			printf("RESULT: %d\n", state.result);
+			state.result->printNode();
+			
 			state.eval = 0;
 			state.result = 0;
 			
@@ -48,7 +43,11 @@ int main() {
     }
 
     Parse(pParser, tokenID, yylval, &state);
-	printf("RESULT: %d\n", state.result);
+	if (state.result == 0) {
+		cout << "Our result is null?" << endl;
+	} else {
+		state.result->printNode();
+	}
 	
 	ParseFree(pParser, free);
     return 0;

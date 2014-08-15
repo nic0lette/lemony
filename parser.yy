@@ -3,7 +3,7 @@
 %left ADD SUB.
 %left MUL DIV.
 
-%token_type { YYSTYPE }
+%token_type { BaseNode * }
 
 %extra_argument { ParserState *state }
 
@@ -23,26 +23,27 @@
 %start_symbol program
 
 program ::= expr(A) SEMI. {
-    state->result = A.int_value;
+    state->result = A;
 	state->eval = 1;
 }
 
 expr(A) ::= INT(B). {
-    A.int_value = B.int_value;
-}
-expr(A) ::= expr(B) SUB expr(C). {
-    A.int_value = B.int_value - C.int_value;
-}
-expr(A) ::= expr(B) ADD expr(C). {
-    A.int_value = B.int_value + C.int_value;
-}
-expr(A) ::= expr(B) DIV expr(C). {
-    A.int_value = B.int_value / C.int_value;
-}
-expr(A) ::= expr(B) MUL expr(C). {
-    A.int_value = B.int_value * C.int_value;
-}
-expr(A) ::= LPAREN expr(B) RPAREN. {
-    A.int_value = B.int_value;
+    A = B;
 }
 
+expr(A) ::= expr(B) ADD expr(C). {
+    A = new BinaryOpNode(ADD, B, C);
+}
+expr(A) ::= expr(B) SUB expr(C). {
+    A = new BinaryOpNode(SUB, B, C);
+}
+expr(A) ::= expr(B) MUL expr(C). {
+    A = new BinaryOpNode(MUL, B, C);
+}
+expr(A) ::= expr(B) DIV expr(C). {
+    A = new BinaryOpNode(DIV, B, C);
+}
+
+expr(A) ::= LPAREN expr(B) RPAREN. {
+    A = B;
+}

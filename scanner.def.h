@@ -1,13 +1,11 @@
 #ifndef CALC_SCANNER_DEF_H_
 #define CALC_SCANNER_DEF_H_
 
-typedef union {
-    int int_value;
-} YYSTYPE;
+#include "astnode.h"
 
 class ParserState {
 public:
-    int result;
+    BaseNode * result;
 	int eval;
     ParserState() : result(0) {
     }
