@@ -14,18 +14,19 @@
 
 class Scanner {
 private:
-    // iostream sucks. very slow.
-    std::istream *ifs;
+	// iostream sucks. very slow.
+	std::istream *ifs;
  
-    // buffer memory
-    char* m_buffer;
-    // current position
-    char* m_cursor;
-    char* m_limit;
-    char* m_token;
-    char* m_marker;
-    int m_buffer_size;
-    int m_lineno;
+	// buffer memory
+	char* m_buffer;
+    
+	// current position
+	char* m_cursor;
+	char* m_limit;
+	char* m_token;
+	char* m_marker;
+	int m_buffer_size;
+	int m_lineno;
  
 public:
 
@@ -33,7 +34,7 @@ public:
         m_lineno++;
     }
 
-    Scanner( std::istream *ifs_, int init_size=1024 )
+    Scanner( std::istream *ifs_, int init_size = 1024 )
         : m_buffer(0)
         , m_cursor(0)
         , m_limit(0)
@@ -65,8 +66,8 @@ public:
             // extend buffer
             m_buffer_size *= 2;
             char* newBuffer = new char[m_buffer_size];
-            for (int i=0; i<restSize; ++i) { // memcpy
-                *(newBuffer+i) = *(m_token+i);
+            for (int i = 0; i < restSize; ++i) { // memcpy
+                *(newBuffer + i) = *(m_token + i);
             }
             m_cursor = newBuffer + (m_cursor-m_token);
             m_token = newBuffer;
@@ -76,8 +77,8 @@ public:
             m_buffer = newBuffer;
         } else {
             // move remained data to head.
-            for (int i=0; i<restSize; ++i) { //memmove( m_buffer, m_token, (restSize)*sizeof(char) );
-                *(m_buffer+i) = *(m_token+i);
+            for (int i = 0; i < restSize; ++i) { //memmove( m_buffer, m_token, (restSize)*sizeof(char) );
+                *(m_buffer + i) = *(m_token + i);
             }
             m_cursor = m_buffer + (m_cursor-m_token);
             m_token = m_buffer;
@@ -86,27 +87,31 @@ public:
  
         // fill to buffer
         int read_size = m_buffer_size - restSize;
-        ifs->read( m_limit, read_size );
+        ifs->read(m_limit, read_size);
         m_limit += ifs->gcount();
  
         return true;
     }
  
     std::string text() {
-        return std::string( m_token, m_token+length() );
+        return std::string(m_token, m_token + length());
     }
+	
 	char * textAsChar() {
 		char * a = new char[length() + 1];
-		a[length()]='\0';
+		a[length()] = '\0';
 		memcpy(a, m_token, length());
 		return a;
 	}
-    int length() {
+    
+	int length() {
         return (m_cursor-m_token);
     }
-    int lineno() {
+    
+	int lineno() {
         return m_lineno;
     }
+	
 	int intToken() {
 		// Convert the string token to a char[]
 		char * token = this->textAsChar();
@@ -122,7 +127,7 @@ public:
 	}
 	
     int scan(BaseNode * & yylval) {
-std:
+		std:
         m_token = m_cursor;
  
     /*!re2c
@@ -137,15 +142,14 @@ std:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
-        INTEGER_OCT            = [0][0-7]*;
-        INTEGER_DEC            = [1-9][0-9]*;
-        INTEGER_HEX            = [0][x][0-9,a-f,A-F]*;
+        INTEGER                = [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
         WS                     = [ \r\n\t\f];
         ANY_CHARACTER          = [^];
 
-        INTEGER_OCT { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
-        INTEGER_DEC { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
-        INTEGER_HEX { yylval = new PrimitiveValueNode(INT, this->intToken()); return TOKEN_INT; }
+        INTEGER {
+			yylval = new PrimitiveValueNode(INT, this->intToken());
+			return TOKEN_INT;
+		}
         "+" { return TOKEN_ADD; }
         "-" { return TOKEN_SUB; }
         "*" { return TOKEN_MUL; }
