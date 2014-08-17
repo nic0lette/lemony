@@ -1,19 +1,23 @@
 GCC = g++
-CFLAGS = -I../include/ -O2
+CFLAGS = -O2
+OBJS = obj/main.o
 
 all: lemony
 
-lemony: scanner.h parser.c main.cc
-	$(GCC) $(CFLAGS) -o lemony main.cc
+lemony: $(OBJS)
+	g++ $(CFLAGS) -o lemony $(OBJS)
 
-parser.c: parser.yy scanner.h
-	lemon parser.yy
+obj/main.o: src/main.cc src/scanner.h src/parser.c
+	g++ $(CFLAGS) -c src/main.cc -o obj/main.o
 
-scanner.h: scanner.re scanner.def.h astnode.h
-	re2c scanner.re > scanner.h
+src/parser.c: src/parser.yy src/scanner.h
+	lemon src/parser.yy
+
+src/scanner.h: src/scanner.re src/scanner.def.h src/astnode.h
+	re2c src/scanner.re > src/scanner.h
 
 clean:
-	rm -rf *.o parser.h parser.out parser.c scanner.h lemony
+	rm -rf obj/*.o src/parser.h src/parser.c src/parser.out src/parser.c src/scanner.h lemony
 
 .PHONY: all clean
 
