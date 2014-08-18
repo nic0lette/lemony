@@ -26,13 +26,12 @@ private:
 	char* m_token;
 	char* m_marker;
 	int m_buffer_size;
+	
+	// State for the parser
 	int m_lineno;
+	char * m_current_token;
  
 public:
-
-    void increment_line_number() {
-        m_lineno++;
-    }
 
     Scanner( std::istream *ifs_, int init_size = 1024 )
         : m_buffer(0)
@@ -42,6 +41,7 @@ public:
         , m_marker(0)
         , m_buffer_size(init_size)
         , m_lineno(1)
+		, m_current_token(0)
     {
         m_buffer = new char[m_buffer_size];
         m_cursor = m_limit = m_token = m_marker = m_buffer;
@@ -77,7 +77,7 @@ public:
             m_buffer = newBuffer;
         } else {
             // move remained data to head.
-            for (int i = 0; i < restSize; ++i) { //memmove( m_buffer, m_token, (restSize)*sizeof(char) );
+            for (int i = 0; i < restSize; ++i) {
                 *(m_buffer + i) = *(m_token + i);
             }
             m_cursor = m_buffer + (m_cursor-m_token);
@@ -93,14 +93,13 @@ public:
         return true;
     }
  
-    std::string text() {
-        return std::string(m_token, m_token + length());
-    }
-	
-	char * textAsChar() {
+	char * token() {
 		char * a = new char[length() + 1];
 		a[length()] = '\0';
 		memcpy(a, m_token, length());
+		
+		// Save the token before returning
+		m_current_token = a;
 		return a;
 	}
     
@@ -108,28 +107,42 @@ public:
         return (m_cursor-m_token);
     }
     
+    void increment_line_number() {
+        m_lineno++;
+    }
+
 	int lineno() {
         return m_lineno;
     }
 	
-	int intToken() {
+	int setAndReturn(char token, int ttype) {
+		char * t = new char[2];
+		t[0] = token;
+		t[1] = '\0';
+		m_current_token = t;
+		
+		return ttype;
+	}
+	
+	char * currentToken() {
+		return m_current_token;
+	}
+	
+	IntNode * intToken() {
 		// Convert the string token to a char[]
-		char * token = this->textAsChar();
+		char * t = this->token();
 		
 		// Parse the hex value
-        int value = (int)strtol(token, NULL, 0);
+        int value = (int)strtol(t, NULL, 0);
 		
-		// Free the memory and return the token
-		delete [] token;
-		
-		// Done!
-		return value;
+		// Done! (t will be freed elsewhere)
+		return new IntNode(value);
 	}
 	
     int scan(BaseNode * & yylval) {
 		std:
         m_token = m_cursor;
- 
+		
     /*!re2c
         re2c:define:YYCTYPE = "char";
         re2c:define:YYCURSOR = m_cursor;
@@ -142,21 +155,24 @@ public:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
-        INTEGER                = [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
-        WS                     = [ \r\n\t\f];
-        ANY_CHARACTER          = [^];
+        INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
+        WS					= [ \t\f];
+		NEW_LINE			= [\n][\r]|[\r][\n]|[\n];
+        ANY_CHARACTER		= [^];
 
-        INTEGER {
-			yylval = new PrimitiveValueNode(INT, this->intToken());
-			return TOKEN_INT;
+        INTEGER { yylval = intToken(); return TOKEN_INT; }
+        "+" { return setAndReturn('+', TOKEN_ADD); }
+        "-" { return setAndReturn('-', TOKEN_SUB); }
+        "*" { return setAndReturn('*', TOKEN_MUL); }
+        "/" { return setAndReturn('/', TOKEN_DIV); }
+		"%" { return setAndReturn('\%', TOKEN_MOD); }
+        "(" { return setAndReturn('(', TOKEN_LPAREN); }
+        ")" { return setAndReturn(')', TOKEN_RPAREN); }
+		";" { return setAndReturn(';', TOKEN_SEMI); }
+		NEW_LINE {
+			increment_line_number();
+			goto std;
 		}
-        "+" { return TOKEN_ADD; }
-        "-" { return TOKEN_SUB; }
-        "*" { return TOKEN_MUL; }
-        "/" { return TOKEN_DIV; }
-        "(" { return TOKEN_LPAREN; }
-        ")" { return TOKEN_RPAREN; }
-		";" { return TOKEN_SEMI; }
         WS {
             goto std;
         }

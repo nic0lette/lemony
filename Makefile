@@ -2,6 +2,8 @@ GCC = g++
 CFLAGS = -O2
 OBJS = obj/main.o
 
+TYPE_INCL = src/astnode.h src/typenodes.h
+
 all: lemony
 
 lemony: $(OBJS)
@@ -13,7 +15,7 @@ obj/main.o: src/main.cc src/scanner.h src/parser.c
 src/parser.c: src/parser.yy src/scanner.h
 	lemon src/parser.yy
 
-src/scanner.h: src/scanner.re src/scanner.def.h src/astnode.h
+src/scanner.h: src/scanner.re src/scanner.def.h $(TYPE_INCL)
 	re2c src/scanner.re > src/scanner.h
 
 clean:

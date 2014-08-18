@@ -1,9 +1,9 @@
 %token_prefix TOKEN_
 
 %left ADD SUB.
-%left MUL DIV.
+%left MUL DIV MOD.
 
-%token_type { BaseNode * }
+%token_type { YYSTYPE }
 
 %extra_argument { ParserState *state }
 
@@ -13,18 +13,30 @@
 }
 
 %syntax_error {
-    fprintf(stderr, "Syntax error\n");
+	const char * cur = (state->curSym == 0) ? "" : state->curSym;
+	const char * prev = (state->prevSym == 0) ? "" : state->prevSym;
+	
+	fprintf(stderr, "Unexpected token '%s' (following '%s') on line %d\n", cur, prev, state->line);
 }
 
 %parse_failure {
-    fprintf(stderr,"Giving up.  Parser is hopelessly lost...\n");
+	fprintf(stderr, "Failed to parse line %d\n", state->line);
+	state->parseError = 1;
 }
 
 %start_symbol program
+	
+program ::= statement(A). {
+    state->astRoot = A;
+}
 
-program ::= expr(A) SEMI. {
-    state->result = A;
-	state->eval = 1;
+statement(A) ::= SEMI. {
+	// Do we want to support empty statements?
+	A = new IntNode(0);
+}
+
+statement(A) ::= expr(B) SEMI. {
+	A = B;
 }
 
 expr(A) ::= INT(B). {

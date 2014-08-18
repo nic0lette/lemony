@@ -21,18 +21,28 @@ int main() {
 
     ParserState state;
 	
-	// initialize state
-	state.eval = 0;
-	
     // scanner.scan return 0 when get EOF.
     while ((tokenID = scanner.scan(yylval)) != 0) {
+		// Is there an old symbol to discard?
+		if (state.prevSym != 0) {
+			delete [] state.prevSym;
+		}
+		
+		// Set state for the parser
+		state.line = scanner.lineno();
+		state.prevSym = state.curSym;
+		state.curSym = scanner.currentToken();
+		
+		// Parse the token
         Parse(pParser, tokenID, yylval, &state);
 		
-		if (state.eval) {
-			state.result->printNode();
+		if (state.astRoot != 0 && !state.parseError) {
+			state.astRoot->printNode();
+			state.astRoot->eval()->printNode();
 			
-			state.eval = 0;
-			state.result = 0;
+			cout << endl;
+			
+			state.reset();
 			
 			/*
 			 * Because we ate the token to eval the statement
@@ -43,10 +53,13 @@ int main() {
     }
 
     Parse(pParser, tokenID, yylval, &state);
-	if (state.result == 0) {
-		cout << "Our result is null?" << endl;
+	if (state.astRoot == 0) {
+		if (!state.parseError) {
+			cout << "Our result is null?" << endl;
+		}
 	} else {
-		state.result->printNode();
+		state.astRoot->printNode();
+		cout << endl;
 	}
 	
 	ParseFree(pParser, free);
