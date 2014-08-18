@@ -8,7 +8,7 @@ using namespace std;
 
 #define OP(op,f) \
 	IntNode * rhsi = dynamic_cast<IntNode *>(rhs); \
-	if (rhsi != 0) new IntNode(_value op rhsi->_value); \
+	if (rhsi != 0) return new IntNode(_value op rhsi->_value); \
 	return BaseNode::f(rhs);
 
 class IntNode : public BaseNode {
