@@ -43,6 +43,10 @@ expr(A) ::= INT(B). {
     A = B;
 }
 
+expr(A) ::= REAL(B). {
+    A = B;
+}
+
 expr(A) ::= expr(B) ADD expr(C). {
     A = new BinaryOpNode(ADD, B, C);
 }

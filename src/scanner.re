@@ -132,11 +132,28 @@ public:
 		// Convert the string token to a char[]
 		char * t = this->token();
 		
-		// Parse the hex value
+		// Parse the value
         int value = (int)strtol(t, NULL, 0);
 		
 		// Done! (t will be freed elsewhere)
 		return new IntNode(value);
+	}
+	
+	RealNode * realToken() {
+		// Convert the string token to a char[]
+		char * t = this->token();
+		
+		// Parse the value
+		double value;
+		double extra;
+		int success = sscanf(t, "%lg%lg", &value, &extra);
+		
+		// Done! (t will be freed elsewhere)
+		if (success == 1) {
+			return new RealNode(value);
+		} else {
+			return 0;
+		}
 	}
 	
     int scan(BaseNode * & yylval) {
@@ -156,11 +173,20 @@ public:
         re2c:indent:string="    ";
 
         INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
+		REAL				= [0-9][0-9,e,E,.]*;
         WS					= [ \t\f];
 		NEW_LINE			= [\n][\r]|[\r][\n]|[\n];
         ANY_CHARACTER		= [^];
 
         INTEGER { yylval = intToken(); return TOKEN_INT; }
+		REAL {
+			yylval = realToken();
+			if (yylval == 0) {
+				printf("malformed floating point value: '%s'\n", m_current_token);
+				goto std;
+			}
+			return TOKEN_REAL;
+		}
         "+" { return setAndReturn('+', TOKEN_ADD); }
         "-" { return setAndReturn('-', TOKEN_SUB); }
         "*" { return setAndReturn('*', TOKEN_MUL); }
