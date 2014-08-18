@@ -36,12 +36,11 @@ int main() {
 		// Parse the token
         Parse(pParser, tokenID, yylval, &state);
 		
-		if (state.astRoot != 0 && !state.parseError) {
-			state.astRoot->printNode();
-			state.astRoot->eval()->printNode();
+		if (state.astRoot != 0) {
+			if (!state.parseError)
+				cout << "Result: " << state.astRoot->eval()->toString() << endl;
 			
-			cout << endl;
-			
+			// Reset and continue
 			state.reset();
 			
 			/*
@@ -54,12 +53,8 @@ int main() {
 
     Parse(pParser, tokenID, yylval, &state);
 	if (state.astRoot == 0) {
-		if (!state.parseError) {
-			cout << "Our result is null?" << endl;
-		}
-	} else {
-		state.astRoot->printNode();
-		cout << endl;
+		if (!state.parseError)
+			cout << "Result: " << state.astRoot->eval()->toString() << endl;
 	}
 	
 	ParseFree(pParser, free);

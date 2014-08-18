@@ -1,4 +1,4 @@
-mycalc
+*.o
 parser.?
 parser.out
 scanner.h

@@ -5,14 +5,25 @@
 
 using namespace std;
 
+// Operators
 #define ADD 0
 #define SUB 1
 #define MUL 2
 #define DIV 3
 #define MOD 4
 
+// Types
+#define VOID 0
+#define INT 1
+#define REAL 2
+#define BOOL 3
+#define STRING 4
+
 // Base class of all nodes in the tree
 class BaseNode {
+protected:
+	static const int _type = VOID;
+	
 public:
 	BaseNode() {};
 	virtual ~BaseNode() {}
@@ -23,11 +34,15 @@ public:
 	virtual BaseNode * div(BaseNode * rhs);
 	virtual BaseNode * mod(BaseNode * rhs);
 	
-	virtual void printNode() { cout << "[BaseNode print]" << endl; }
+	virtual string toString() {
+		char s[100];
+		snprintf(s, 100, "[BaseNode:%s]", nodeType());
+		return string(s);
+	}
 	virtual const char * nodeType() { return "[BaseNode]"; }
 	
 	// Only needs to be defined by functions etc...
-	virtual BaseNode * eval() { cout << "[Eval:Base]:" << nodeType() << endl; return this; };
+	virtual BaseNode * eval() { return this; };
 	
 	// Normally there's nothing to do for free (only non-leaf children need it)
 	virtual void free() {};
@@ -55,34 +70,16 @@ public:
 	BinaryOpNode(int op, BaseNode * lhs, BaseNode * rhs) : op(op), lhs(lhs), rhs(rhs) {}
 	const char * nodeType() { return "[BinaryOpNode]"; }
 	
-	void printNode() {
-		cout << "(";
-		
-		lhs->printNode();
-		
+	string toString() {
 		switch(op) {
-			case ADD:
-			cout << " + ";
-			break;
-			case SUB:
-			cout << " - ";
-			break;
-			case MUL:
-			cout << " * ";
-			break;
-			case DIV:
-			cout << " / ";
-			break;
-			case MOD:
-			cout << " %% ";
-			break;
+			case ADD: return string("+");
+			case SUB: return string("-");
+			case MUL: return string("*");
+			case DIV: return string("/");
+			case MOD: return string("%");
 			default:
-			cout << "IDEK" << endl;
+			return string("[BOO:Unknown]");
 		}
-		
-		rhs->printNode();
-
-		cout << ")";
 	}
 
 	// Free the memory used only by the children, ours will be freed by our parent
@@ -92,32 +89,18 @@ public:
 	}
 	
 	BaseNode * eval() {
-		switch(op) {
-			case ADD: cout << "::eval +::"; break;
-			case SUB: cout << "::eval -::"; break;
-			case MUL: cout << "::eval *::"; break;
-			case DIV: cout << "::eval /::"; break;
-			case MOD: cout << "::eval %::"; break;
-			default: return new ErrorNode("Internal error: unknown operator found in AST");
-		}
-		
-		cout << lhs->nodeType() << " & " << rhs->nodeType() << endl;
-		
+		// Evaluate the two operands
 		BaseNode * elhs = lhs->eval();
 		BaseNode * erhs = rhs->eval();
-		cout << "lhs: " << elhs->nodeType() << " rhs: " << rhs->nodeType() << " ";
-		
-		BaseNode * res;
+
 		switch(op) {
-			case ADD: res = elhs->add(erhs); break;
-			case SUB: res = elhs->sub(erhs); break;
-			case MUL: res = elhs->mul(erhs); break;
-			case DIV: res = elhs->div(erhs); break;
-			case MOD: res = elhs->mod(erhs); break;
+			case ADD: return elhs->add(erhs);
+			case SUB: return elhs->sub(erhs);
+			case MUL: return elhs->mul(erhs);
+			case DIV: return elhs->div(erhs);
+			case MOD: return elhs->mod(erhs);
 			default: return new ErrorNode("Internal error: unknown operator found in AST");
 		}
-		cout << "Result type: " << res->nodeType() << endl;
-		return res;
 	}
 };
 

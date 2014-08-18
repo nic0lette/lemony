@@ -1,11 +1,20 @@
 #ifndef TYPE_NODES_H_
 #define TYPE_NODES_H_
 
+#include <stdio.h>
 #include <string>
 
 using namespace std;
 
+#define OP(op,f) \
+	IntNode * rhsi = dynamic_cast<IntNode *>(rhs); \
+	if (rhsi != 0) new IntNode(_value op rhsi->_value); \
+	return BaseNode::f(rhs);
+
 class IntNode : public BaseNode {
+protected:
+	static const int _type = INT;
+	
 private:
 	long long _value;
 	
@@ -18,13 +27,19 @@ public:
 	/*
 	 * Operators
 	 */
-	IntNode * add(IntNode * rhs) { cout << "Int+" << endl; return new IntNode(_value + rhs->getValue()); }
-	IntNode * sub(IntNode * rhs) { cout << "Int-" << endl; return new IntNode(_value - rhs->getValue()); }
-	IntNode * mul(IntNode * rhs) { cout << "Int*" << endl; return new IntNode(_value * rhs->getValue()); }
-	IntNode * div(IntNode * rhs) { cout << "Int/" << endl; return new IntNode(_value / rhs->getValue()); }
-	IntNode * mod(IntNode * rhs) { cout << "Int%%" << endl; return new IntNode(_value % rhs->getValue()); }
+	BaseNode * add(BaseNode * rhs) { OP(+, add) }
+	BaseNode * sub(BaseNode * rhs) { OP(-, add) }
+	BaseNode * mul(BaseNode * rhs) { OP(*, add) }
+	BaseNode * div(BaseNode * rhs) { OP(/, add) }
+	BaseNode * mod(BaseNode * rhs) { OP(%, add) }
 	
-	void printNode() { cout << _value << "i"; }
+	string toString() {
+		char v[100]; // This is ridiculously huge >_>
+		snprintf(v, 100, "%lld", _value);
+		return string(v);
+	}
 };
+
+#undef OP
 
 #endif
