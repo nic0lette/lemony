@@ -24,8 +24,12 @@ class BaseNode {
 protected:
 	static const int _type = VOID;
 	
+	// Is this node a temporary node (partial evaluation result)
+	int _temp;
+	void setTemp() { _temp = 1; }
+	
 public:
-	BaseNode() {};
+	BaseNode() : _temp(0) {};
 	virtual ~BaseNode() {}
 	
 	virtual BaseNode * add(BaseNode * rhs);
@@ -46,6 +50,9 @@ public:
 	
 	// Normally there's nothing to do for free (only non-leaf children need it)
 	virtual void free() {};
+	
+	// Just returns whether a node is a temp node or not
+	int isTemp() { return _temp; }
 };
 
 // Base error node
@@ -92,15 +99,23 @@ public:
 		// Evaluate the two operands
 		BaseNode * elhs = lhs->eval();
 		BaseNode * erhs = rhs->eval();
+		BaseNode * res;
 
 		switch(op) {
-			case ADD: return elhs->add(erhs);
-			case SUB: return elhs->sub(erhs);
-			case MUL: return elhs->mul(erhs);
-			case DIV: return elhs->div(erhs);
-			case MOD: return elhs->mod(erhs);
-			default: return new ErrorNode("Internal error: unknown operator found in AST");
+			case ADD: res = elhs->add(erhs); break;
+			case SUB: res = elhs->sub(erhs); break;
+			case MUL: res = elhs->mul(erhs); break;
+			case DIV: res = elhs->div(erhs); break;
+			case MOD: res = elhs->mod(erhs); break;
+			default: res = new ErrorNode("Internal error: unknown operator found in AST");
 		}
+		
+		// Free temp results
+		if (elhs->isTemp()) delete elhs;
+		if (erhs->isTemp()) delete erhs;
+		
+		// Done
+		return res;
 	}
 };
 

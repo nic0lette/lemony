@@ -8,7 +8,7 @@ using namespace std;
 
 #define OP(op,f) \
 	IntNode * rhsi = dynamic_cast<IntNode *>(rhs); \
-	if (rhsi != 0) return new IntNode(_value op rhsi->_value); \
+	if (rhsi != 0) return new IntNode(_value op rhsi->_value, 1); \
 	return BaseNode::f(rhs);
 
 class IntNode : public BaseNode {
@@ -20,6 +20,10 @@ private:
 	
 public:
 	IntNode(long long v) : _value(v) {}
+	IntNode(long long v, int t) : _value(v) {
+		if (t) BaseNode::setTemp();
+	}
+	
 	const char * nodeType() { return "[IntNode]"; }
 	
 	long long getValue() { return _value; }
