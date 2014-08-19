@@ -1,5 +1,6 @@
-*.o
 parser.?
 parser.out
 scanner.h
+ast.h
+obj/
 lemony

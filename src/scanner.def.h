@@ -2,7 +2,7 @@
 #define CALC_SCANNER_DEF_H_
 
 // Include the nodes that build the AST
-#include "astnode.h"
+#include "ast.h"
 
 // set the type for lemon tokens
 #define YYSTYPE BaseNode *

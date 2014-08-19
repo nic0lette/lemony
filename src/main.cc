@@ -2,6 +2,8 @@
 #include <sstream>
 #include <cassert>
 #include <cstdlib>
+
+#include "ast.h"
 #include "scanner.h"
 #include "parser.c"
 
