@@ -1,9 +1,25 @@
+# Basic integer arithmatic
+#= Result: 40
 10 * (2 + 2);
+#= Result: 4
 (1 - (2 * 2)) + 7;
+
+# Empty statement
+#= Result: 0
 ;
-10 +
-(5 - 2) *
-16 / 22;
-10 +
-(5 - 2) *
-16 / +22;
+
+# Statement with newlines
+#= Result: 12
+10 +\n(5 - 2) *\n16 / 22;
+
+# Parse error detection
+#= Failed to parse line 3
+10 +\n(5 - 2) *\n16 / +22;
+
+# Basic floating point
+#= Result: 7.25
+3.0 + (2.5 * 2) - .75;
+
+# Implicit conversion (int -> float)
+#= Result: 3.5
+2 + (3.0 * 1.5) - 3;

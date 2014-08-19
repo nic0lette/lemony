@@ -139,18 +139,19 @@ public:
 		return new IntNode(value);
 	}
 	
-	RealNode * realToken() {
+	FloatNode * floatToken() {
 		// Convert the string token to a char[]
 		char * t = this->token();
+		int len = strlen(t);
 		
 		// Parse the value
 		double value;
-		double extra;
-		int success = sscanf(t, "%lg%lg", &value, &extra);
+		char extra[len];
+		int success = sscanf(t, "%lg%s", &value, (char *) &extra);
 		
 		// Done! (t will be freed elsewhere)
 		if (success == 1) {
-			return new RealNode(value);
+			return new FloatNode(value);
 		} else {
 			return 0;
 		}
@@ -173,25 +174,25 @@ public:
         re2c:indent:string="    ";
 
         INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
-		REAL				= [0-9][0-9,e,E,.]*;
+		FLOAT				= [0-9,\.][0-9,e,E,\.]*;
         WS					= [ \t\f];
 		NEW_LINE			= [\n][\r]|[\r][\n]|[\n];
         ANY_CHARACTER		= [^];
 
         INTEGER { yylval = intToken(); return TOKEN_INT; }
-		REAL {
-			yylval = realToken();
+		FLOAT {
+			yylval = floatToken();
 			if (yylval == 0) {
 				printf("malformed floating point value: '%s'\n", m_current_token);
 				goto std;
 			}
-			return TOKEN_REAL;
+			return TOKEN_FLOAT;
 		}
         "+" { return setAndReturn('+', TOKEN_ADD); }
         "-" { return setAndReturn('-', TOKEN_SUB); }
         "*" { return setAndReturn('*', TOKEN_MUL); }
         "/" { return setAndReturn('/', TOKEN_DIV); }
-		"%" { return setAndReturn('\%', TOKEN_MOD); }
+		"%" { return setAndReturn('%', TOKEN_MOD); }
         "(" { return setAndReturn('(', TOKEN_LPAREN); }
         ")" { return setAndReturn(')', TOKEN_RPAREN); }
 		";" { return setAndReturn(';', TOKEN_SEMI); }

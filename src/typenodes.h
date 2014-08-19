@@ -40,7 +40,7 @@ public:
 	}
 };
 
-class RealNode : public BaseNode {
+class FloatNode : public BaseNode {
 protected:
 	static const int _type = REAL;
 	
@@ -48,8 +48,8 @@ private:
 	double _value;
 	
 public:
-	RealNode(double v) : _value(v) {}
-	RealNode(double v, int t) : _value(v) {
+	FloatNode(double v) : _value(v) {}
+	FloatNode(double v, int t) : _value(v) {
 		if (t) BaseNode::setTemp();
 	}
 	
@@ -80,8 +80,8 @@ public:
 #define OP(op,f) \
 	IntNode * rhsi = dynamic_cast<IntNode *>(rhs); \
 	if (rhsi != 0) return new IntNode(_value op rhsi->getValue(), 1); \
-	RealNode * rhsr = dynamic_cast<RealNode *>(rhs); \
-	if (rhsr != 0) return new RealNode(_value op rhsr->getValue(), 1); \
+	FloatNode * rhsf = dynamic_cast<FloatNode *>(rhs); \
+	if (rhsf != 0) return new FloatNode(_value op rhsf->getValue(), 1); \
 	return BaseNode::f(rhs);
 
 	BaseNode * IntNode::add(BaseNode * rhs) { OP(+, add) }
@@ -100,17 +100,17 @@ public:
 #undef OP	
 
 #define OP(op,f) \
-	RealNode * rhsr = dynamic_cast<RealNode *>(rhs); \
-	if (rhsr != 0) return new RealNode(_value op rhsr->getValue(), 1); \
+	FloatNode * rhsf = dynamic_cast<FloatNode *>(rhs); \
+	if (rhsf != 0) return new FloatNode(_value op rhsf->getValue(), 1); \
 	IntNode * rhsi = dynamic_cast<IntNode *>(rhs); \
-	if (rhsi != 0) return new IntNode(_value op rhsi->getValue(), 1); \
+	if (rhsi != 0) return new FloatNode(_value op rhsi->getValue(), 1); \
 	return BaseNode::f(rhs);
 
 
-	BaseNode * RealNode::add(BaseNode * rhs) { OP(+, add) }
-	BaseNode * RealNode::sub(BaseNode * rhs) { OP(-, add) }
-	BaseNode * RealNode::mul(BaseNode * rhs) { OP(*, add) }
-	BaseNode * RealNode::div(BaseNode * rhs) { OP(/, add) }
+	BaseNode * FloatNode::add(BaseNode * rhs) { OP(+, add) }
+	BaseNode * FloatNode::sub(BaseNode * rhs) { OP(-, add) }
+	BaseNode * FloatNode::mul(BaseNode * rhs) { OP(*, add) }
+	BaseNode * FloatNode::div(BaseNode * rhs) { OP(/, add) }
 #undef OP
 
 

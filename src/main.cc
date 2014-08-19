@@ -52,7 +52,7 @@ int main() {
     }
 
     Parse(pParser, tokenID, yylval, &state);
-	if (state.astRoot == 0) {
+	if (state.astRoot != 0) {
 		if (!state.parseError)
 			cout << "Result: " << state.astRoot->eval()->toString() << endl;
 	}

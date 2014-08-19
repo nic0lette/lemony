@@ -43,7 +43,7 @@ expr(A) ::= INT(B). {
     A = B;
 }
 
-expr(A) ::= REAL(B). {
+expr(A) ::= FLOAT(B). {
     A = B;
 }
 
@@ -58,6 +58,9 @@ expr(A) ::= expr(B) MUL expr(C). {
 }
 expr(A) ::= expr(B) DIV expr(C). {
     A = new BinaryOpNode(DIV, B, C);
+}
+expr(A) ::= expr(B) MOD expr(C). {
+    A = new BinaryOpNode(MOD, B, C);
 }
 
 expr(A) ::= LPAREN expr(B) RPAREN. {
