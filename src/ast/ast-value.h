@@ -1,6 +1,8 @@
 #ifndef AST_VALUE_H_
 #define AST_VALUE_H_
 
+#include <string>
+
 #include "ast-base.h"
 #include "ast-error.h"
 

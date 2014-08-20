@@ -5,14 +5,18 @@
 
 #include "ast-base.h"
 
+using namespace std;
+
 class ErrorNode : public BaseNode {
 private:
 	std::string _msg;
 public:
 	ErrorNode(std::string msg="Unknown error") : _msg(msg) {};
 	const char * nodeType() { return "error"; }
+
+	string toString();
 	
-	std::string getMessage();
+	string getMessage();
 
 	void printNode();
 };

@@ -11,6 +11,16 @@ using namespace std;
 
 #define DEBUG 0
 
+void printResult(BaseNode * res) {
+	BaseNode * r = res->eval();
+	ValueNode * v = dynamic_cast<ValueNode *>(r);
+	if (v != 0) {
+		cout << "Result: " << v->toString() << endl;
+	} else {
+		cout << r->toString() << endl;
+	}
+}
+
 int main() {
     BaseNode * yylval;
     Scanner scanner(&std::cin);
@@ -39,8 +49,9 @@ int main() {
         Parse(pParser, tokenID, yylval, &state);
 		
 		if (state.astRoot != 0) {
-			if (!state.parseError)
-				cout << "Result: " << state.astRoot->eval()->toString() << endl;
+			if (!state.parseError) {
+				printResult(state.astRoot);
+			}
 			
 			// Reset and continue
 			state.reset();
@@ -55,8 +66,9 @@ int main() {
 
     Parse(pParser, tokenID, yylval, &state);
 	if (state.astRoot != 0) {
-		if (!state.parseError)
-			cout << "Result: " << state.astRoot->eval()->toString() << endl;
+		if (!state.parseError) {
+			printResult(state.astRoot);
+		}
 	}
 	
 	ParseFree(pParser, free);

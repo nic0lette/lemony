@@ -6,6 +6,7 @@
 #include <cstring>
 
 #include "ast-base.h"
+#include "ast-value.h"
 #include "ast-int.h"
 
 using namespace std;
@@ -26,7 +27,7 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
-	const char * nodeType() { return "real"; }
+	const char * nodeType() { return "float"; }
 	
 	double getValue() { return _value; }
 	

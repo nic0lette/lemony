@@ -23,3 +23,7 @@
 # Implicit conversion (int -> float)
 #= Result: 3.5
 2 + (3.0 * 1.5) - 3;
+
+# Implicit conversion fail (float % int)
+#= fatal: operation (%) not defined between types float and int
+2.0 % 2;

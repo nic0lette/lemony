@@ -1,21 +1,27 @@
 #include "ast-value.h"
 
+#define TYPE_CHECK_FAIL(op) \
+	char msg[255]; \
+	snprintf(msg, 255, "fatal: operation (%c) not defined between types %s and %s", \
+		op, this->nodeType(), rhs->nodeType()); \
+	return new ErrorNode(msg);
+
 BaseNode * ValueNode::add(ValueNode * rhs) {
-	return new ErrorNode("not implemented");
+	TYPE_CHECK_FAIL('+')
 }
 
 BaseNode * ValueNode::sub(ValueNode * rhs) {
-	return new ErrorNode("not implemented");
+	TYPE_CHECK_FAIL('-')
 }
 
 BaseNode * ValueNode::mul(ValueNode * rhs) {
-	return new ErrorNode("not implemented");
+	TYPE_CHECK_FAIL('*')
 }
 
 BaseNode * ValueNode::div(ValueNode * rhs) {
-	return new ErrorNode("not implemented");
+	TYPE_CHECK_FAIL('/')
 }
 
 BaseNode * ValueNode::mod(ValueNode * rhs) {
-	return new ErrorNode("not implemented");
+	TYPE_CHECK_FAIL('%')
 }

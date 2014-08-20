@@ -1,7 +1,11 @@
 #include "ast-error.h"
 
-std::string ErrorNode::getMessage() {
+string ErrorNode::getMessage() {
 	return _msg;
+}
+
+string ErrorNode::toString() {
+	return getMessage();
 }
 
 void ErrorNode::printNode() {
