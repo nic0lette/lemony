@@ -1,16 +1,15 @@
 #ifndef AST_TYPES_H_
 #define AST_TYPES_H_
 
-#include <iostream>
-
-using namespace std;
-
 // Operators
 #define ADD 0
 #define SUB 1
 #define MUL 2
 #define DIV 3
 #define MOD 4
+
+// Operator "names"
+const char OP_NAMES[] = {'+', '-', '*', '/', '%'};
 
 // Types
 #define VOID 0

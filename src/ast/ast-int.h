@@ -6,11 +6,12 @@
 #include <cstring>
 
 #include "ast-base.h"
+#include "ast-value.h"
 #include "ast-float.h"
 
 using namespace std;
 
-class IntNode : public BaseNode {
+class IntNode : public ValueNode {
 protected:
 	static const int _type = INT;
 	
@@ -30,11 +31,11 @@ public:
 	/*
 	 * Operators
 	 */
-	BaseNode * add(BaseNode * rhs);
-	BaseNode * sub(BaseNode * rhs);
-	BaseNode * mul(BaseNode * rhs);
-	BaseNode * div(BaseNode * rhs);
-	BaseNode * mod(BaseNode * rhs);
+	BaseNode * add(ValueNode * rhs);
+	BaseNode * sub(ValueNode * rhs);
+	BaseNode * mul(ValueNode * rhs);
+	BaseNode * div(ValueNode * rhs);
+	BaseNode * mod(ValueNode * rhs);
 	
 	string toString() {
 		char v[100]; // This is ridiculously huge >_>

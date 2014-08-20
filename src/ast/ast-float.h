@@ -13,7 +13,7 @@ using namespace std;
 // Forward declare int
 class IntNode;
 
-class FloatNode : public BaseNode {
+class FloatNode : public ValueNode {
 protected:
 	static const int _type = REAL;
 	
@@ -33,10 +33,10 @@ public:
 	/*
 	 * Operators
 	 */
-	BaseNode * add(BaseNode * rhs);
-	BaseNode * sub(BaseNode * rhs);
-	BaseNode * mul(BaseNode * rhs);
-	BaseNode * div(BaseNode * rhs);
+	BaseNode * add(ValueNode * rhs);
+	BaseNode * sub(ValueNode * rhs);
+	BaseNode * mul(ValueNode * rhs);
+	BaseNode * div(ValueNode * rhs);
 	
 	string toString() {
 		char v[100]; // This is ridiculously huge >_>

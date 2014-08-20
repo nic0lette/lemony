@@ -23,12 +23,6 @@ public:
 	// Just returns whether a node is a temp node or not
 	inline int isTemp() { return _temp; }
 	
-	virtual BaseNode * add(BaseNode * rhs);
-	virtual BaseNode * sub(BaseNode * rhs);
-	virtual BaseNode * mul(BaseNode * rhs);
-	virtual BaseNode * div(BaseNode * rhs);
-	virtual BaseNode * mod(BaseNode * rhs);
-	
 	virtual string toString();
 	
 	virtual const char * nodeType() { return "base"; }

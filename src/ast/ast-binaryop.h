@@ -4,6 +4,7 @@
 #include <string>
 
 #include "ast-base.h"
+#include "ast-value.h"
 #include "ast-error.h"
 
 class BinaryOpNode : public BaseNode {
