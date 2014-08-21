@@ -9,7 +9,7 @@
 class ValueNode : public BaseNode {
 
 public:
-	const char * nodeType() { return "value"; }
+	string nodeType() { return "value"; }
 
 	virtual BaseNode * add(ValueNode * rhs);
 	virtual BaseNode * sub(ValueNode * rhs);

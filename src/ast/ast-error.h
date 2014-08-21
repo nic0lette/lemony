@@ -12,7 +12,7 @@ private:
 	std::string _msg;
 public:
 	ErrorNode(std::string msg="Unknown error") : _msg(msg) {};
-	const char * nodeType() { return "error"; }
+	string nodeType() { return "error"; }
 
 	string toString();
 	

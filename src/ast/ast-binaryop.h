@@ -14,7 +14,7 @@ public:
 	BaseNode * rhs;
 	
 	BinaryOpNode(int op, BaseNode * lhs, BaseNode * rhs) : op(op), lhs(lhs), rhs(rhs) {}
-	const char * nodeType() { return "[BinaryOpNode]"; }
+	string nodeType() { return "[BinaryOpNode]"; }
 	
 	string toString();
 	

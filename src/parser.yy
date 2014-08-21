@@ -13,10 +13,8 @@
 }
 
 %syntax_error {
-	const char * cur = (state->curSym == 0) ? "" : state->curSym;
-	const char * prev = (state->prevSym == 0) ? "" : state->prevSym;
-	
-	fprintf(stderr, "Unexpected token '%s' (following '%s') on line %d\n", cur, prev, state->line);
+	fprintf(stderr, "Unexpected token '%s' (following '%s') on line %d\n",
+		state->curSym.c_str(), state->prevSym.c_str(), state->line);
 }
 
 %parse_failure {
@@ -37,6 +35,22 @@ statement(A) ::= SEMI. {
 
 statement(A) ::= expr(B) SEMI. {
 	A = B;
+}
+
+statement ::= TYPE(A) IDENTIFIER(B) SEMI. {
+	LightweightTypeNode * typeNode = dynamic_cast<LightweightTypeNode *>(A);
+	IdentifierNode * idNode = dynamic_cast<IdentifierNode *>(B);
+	
+	if (typeNode == 0 || idNode == 0) {
+		cerr << "internal compiler error: expected type/identifier node but found "
+			<< A->nodeType() << "/" << B->nodeType() << endl;
+	} else {
+		idNode->type(typeNode);
+		cout << "declare " << idNode->name() << " as type " << idNode->type() << endl; 
+	}
+}
+
+statement ::= TYPE IDENTIFIER ASSIGNMENT expr SEMI. {
 }
 
 expr(A) ::= INT(B). {

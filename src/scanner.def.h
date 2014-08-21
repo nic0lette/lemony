@@ -1,6 +1,8 @@
 #ifndef CALC_SCANNER_DEF_H_
 #define CALC_SCANNER_DEF_H_
 
+#include <string>
+
 // Include the nodes that build the AST
 #include "ast.h"
 
@@ -13,10 +15,10 @@ public:
     BaseNode * astRoot;
 	
 	// Current symbol being parsed
-	char * curSym;
+	string curSym;
 	
 	// Token just processed
-	char * prevSym;
+	string prevSym;
 	
 	// Location in the source
 	int line;
@@ -25,7 +27,7 @@ public:
 	int parseError;
 
 	// Default constructor
-    ParserState() : astRoot(0), curSym(0), prevSym(0), line(0), parseError(0) {
+    ParserState() : astRoot(0), curSym(""), prevSym(""), line(0), parseError(0) {
     }
 	
 	void reset() {
@@ -36,8 +38,8 @@ public:
 		}
 		
 		astRoot = 0;
-		curSym = 0;
-		prevSym = 0;
+		curSym = "";
+		prevSym = "";
 		line = 0;
 		parseError = 0;
 	}

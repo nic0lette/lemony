@@ -24,7 +24,7 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
-	const char * nodeType() { return "int"; }
+	string nodeType() { return "int"; }
 	
 	long long getValue() { return _value; }
 	

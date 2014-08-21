@@ -16,7 +16,7 @@ class IntNode;
 
 class FloatNode : public ValueNode {
 protected:
-	static const int _type = REAL;
+	static const int _type = FLOAT;
 	
 private:
 	double _value;
@@ -27,7 +27,7 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
-	const char * nodeType() { return "float"; }
+	string nodeType() { return "float"; }
 	
 	double getValue() { return _value; }
 	

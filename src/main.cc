@@ -35,11 +35,6 @@ int main() {
 	
     // scanner.scan return 0 when get EOF.
     while ((tokenID = scanner.scan(yylval)) != 0) {
-		// Is there an old symbol to discard?
-		if (state.prevSym != 0) {
-			delete [] state.prevSym;
-		}
-		
 		// Set state for the parser
 		state.line = scanner.lineno();
 		state.prevSym = state.curSym;

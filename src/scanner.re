@@ -29,7 +29,7 @@ private:
 	
 	// State for the parser
 	int m_lineno;
-	char * m_current_token;
+	string m_current_token;
  
 public:
 
@@ -41,7 +41,7 @@ public:
         , m_marker(0)
         , m_buffer_size(init_size)
         , m_lineno(1)
-		, m_current_token(0)
+		, m_current_token("")
     {
         m_buffer = new char[m_buffer_size];
         m_cursor = m_limit = m_token = m_marker = m_buffer;
@@ -93,14 +93,16 @@ public:
         return true;
     }
  
-	char * token() {
+	string token() {
 		char * a = new char[length() + 1];
 		a[length()] = '\0';
 		memcpy(a, m_token, length());
+		string t = string(a);
+		delete[] a;
 		
 		// Save the token before returning
-		m_current_token = a;
-		return a;
+		m_current_token = t;
+		return t;
 	}
     
 	int length() {
@@ -124,16 +126,16 @@ public:
 		return ttype;
 	}
 	
-	char * currentToken() {
+	string currentToken() {
 		return m_current_token;
 	}
 	
 	IntNode * intToken() {
 		// Convert the string token to a char[]
-		char * t = this->token();
+		string t = this->token();
 		
 		// Parse the value
-        int value = (int)strtol(t, NULL, 0);
+        int value = (int)strtol(t.c_str(), NULL, 0);
 		
 		// Done! (t will be freed elsewhere)
 		return new IntNode(value);
@@ -141,13 +143,12 @@ public:
 	
 	FloatNode * floatToken() {
 		// Convert the string token to a char[]
-		char * t = this->token();
-		int len = strlen(t);
+		string t = this->token();
 		
 		// Parse the value
 		double value;
-		char extra[len];
-		int success = sscanf(t, "%lg%s", &value, (char *) &extra);
+		char extra[t.length()];
+		int success = sscanf(t.c_str(), "%lg%s", &value, (char *) &extra);
 		
 		// Done! (t will be freed elsewhere)
 		if (success == 1) {
@@ -155,6 +156,21 @@ public:
 		} else {
 			return 0;
 		}
+	}
+	
+	LightweightTypeNode * lwTypeNode() {
+		// Convert the string token to a char[]
+		string t = this->token();
+
+		// Create the new node and free the string
+		LightweightTypeNode * node = new LightweightTypeNode(t);
+		
+		// Done! (t will be freed elsewhere)
+		return node;
+	}
+	
+	IdentifierNode * identifierNode() {
+		return new IdentifierNode(this->token());
 	}
 	
     int scan(BaseNode * & yylval) {
@@ -173,21 +189,35 @@ public:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
+		TYPE				= "void"|"int"|"float"|"bool"|"string";
+		IDENTIFIER			= [A-Z,a-z]|[A-Z,a-z][A-Z,a-z,0-9,_]*;
         INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
 		FLOAT				= [0-9,\.][0-9,e,E,\.]*;
         WS					= [ \t\f];
 		NEW_LINE			= [\n][\r]|[\r][\n]|[\n];
         ANY_CHARACTER		= [^];
 
-        INTEGER { yylval = intToken(); return TOKEN_INT; }
+		TYPE {
+			yylval = lwTypeNode();
+			return TOKEN_TYPE;
+		}
+		IDENTIFIER {
+			yylval = identifierNode();
+			return TOKEN_IDENTIFIER;
+		}
+        INTEGER {
+			yylval = intToken();
+			return TOKEN_INT;
+		}
 		FLOAT {
 			yylval = floatToken();
 			if (yylval == 0) {
-				printf("malformed floating point value: '%s'\n", m_current_token);
+				printf("malformed floating point value: '%s'\n", m_current_token.c_str());
 				goto std;
 			}
 			return TOKEN_FLOAT;
 		}
+		"=" { return setAndReturn('=', TOKEN_ASSIGNMENT); }
         "+" { return setAndReturn('+', TOKEN_ADD); }
         "-" { return setAndReturn('-', TOKEN_SUB); }
         "*" { return setAndReturn('*', TOKEN_MUL); }

@@ -1,6 +1,8 @@
 #ifndef AST_TYPES_H_
 #define AST_TYPES_H_
 
+#include <string>
+
 // Operators
 #define ADD 0
 #define SUB 1
@@ -14,8 +16,10 @@ const char OP_NAMES[] = {'+', '-', '*', '/', '%'};
 // Types
 #define VOID 0
 #define INT 1
-#define REAL 2
+#define FLOAT 2
 #define BOOL 3
 #define STRING 4
+
+const std::string TYPE_NAMES[] = {"void","int","float","bool","string"};
 
 #endif

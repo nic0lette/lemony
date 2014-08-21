@@ -10,7 +10,7 @@ using namespace std;
 // Base class of all nodes in the tree
 class BaseNode {
 protected:
-	static const int _type = VOID;
+	static const int _nodeType = VOID;
 	
 	// Is this node a temporary node (partial evaluation result)
 	int _temp;
@@ -25,7 +25,7 @@ public:
 	
 	virtual string toString();
 	
-	virtual const char * nodeType() { return "base"; }
+	virtual string nodeType() { return "base"; }
 	
 	// Only needs to be defined by functions etc...
 	virtual BaseNode * eval() { return this; };
