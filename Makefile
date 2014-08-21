@@ -1,15 +1,18 @@
 GCC = g++
 CFLAGS = -O2
 LD_FLAGS = -Lobj/
-OBJS = obj/main.o
+OBJS = obj/main.o obj/symboltable.o
 
 all: lemony
 
 lemony: $(OBJS)
 	g++ $(LD_FLAGS) -o lemony $(OBJS) -last
 
-obj/main.o: src/main.cc src/scanner.h src/parser.c
+obj/main.o: src/main.cc src/scanner.h src/parser.c obj/symboltable.o
 	g++ $(CFLAGS) -c src/main.cc -o obj/main.o
+	
+obj/symboltable.o: src/symboltable.h src/symboltable.cc
+	g++ $(CFLAGS) -c src/symboltable.cc -o obj/symboltable.o
 
 src/parser.c: src/parser.yy src/scanner.h
 	lemon src/parser.yy

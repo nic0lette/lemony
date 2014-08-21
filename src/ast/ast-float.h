@@ -27,6 +27,7 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
+	int type() { return FLOAT; }
 	string nodeType() { return "float"; }
 	
 	double getValue() { return _value; }

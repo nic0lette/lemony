@@ -10,6 +10,32 @@
 %include {
 #include <iostream>
 #include "scanner.def.h"
+
+	BaseNode * createVariable(BaseNode *& type, BaseNode *& id) {
+		LightweightTypeNode * typeNode = dynamic_cast<LightweightTypeNode *>(type);
+		IdentifierNode * idNode = dynamic_cast<IdentifierNode *>(id);
+	
+		if (typeNode != 0 || idNode != 0) {
+			// Okay, the world is sane
+			idNode->type(typeNode);
+		
+			// This is why I call it a "lightweight" type node - it's job is over
+			// (sorry little node)
+			delete type;
+		
+			// Send it back up
+			return idNode;
+		} else {
+			cerr << "internal compiler error: expected type/identifier node but found "
+				<< type->nodeType() << "/" << id->nodeType() << endl;
+		
+			// I don't even know... Make an error node?
+			delete type;
+			delete id;
+		
+			return new ErrorNode("How did you do that?");
+		}
+	}
 }
 
 %syntax_error {
@@ -37,20 +63,19 @@ statement(A) ::= expr(B) SEMI. {
 	A = B;
 }
 
-statement ::= TYPE(A) IDENTIFIER(B) SEMI. {
-	LightweightTypeNode * typeNode = dynamic_cast<LightweightTypeNode *>(A);
-	IdentifierNode * idNode = dynamic_cast<IdentifierNode *>(B);
-	
-	if (typeNode == 0 || idNode == 0) {
-		cerr << "internal compiler error: expected type/identifier node but found "
-			<< A->nodeType() << "/" << B->nodeType() << endl;
-	} else {
-		idNode->type(typeNode);
-		cout << "declare " << idNode->name() << " as type " << idNode->type() << endl; 
-	}
+statement(A) ::= TYPE(B) IDENTIFIER(C) SEMI. {
+	A = createVariable(B, C);
 }
 
-statement ::= TYPE IDENTIFIER ASSIGNMENT expr SEMI. {
+statement(A) ::= TYPE(B) IDENTIFIER(C) ASSIGNMENT expr(D) SEMI. {
+	BaseNode * pvar = createVariable(B, C);
+	IdentifierNode * var = dynamic_cast<IdentifierNode *>(pvar);
+	if (var != 0) {
+		var->assign(D);
+		A = var;
+	} else {
+		A = pvar;
+	}
 }
 
 expr(A) ::= INT(B). {
@@ -76,7 +101,7 @@ expr(A) ::= expr(B) DIV expr(C). {
 expr(A) ::= expr(B) MOD expr(C). {
     A = new BinaryOpNode(MOD, B, C);
 }
-
 expr(A) ::= LPAREN expr(B) RPAREN. {
     A = B;
 }
+

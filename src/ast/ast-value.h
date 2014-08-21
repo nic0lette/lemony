@@ -10,6 +10,7 @@ class ValueNode : public BaseNode {
 
 public:
 	string nodeType() { return "value"; }
+	virtual int type() = 0;
 
 	virtual BaseNode * add(ValueNode * rhs);
 	virtual BaseNode * sub(ValueNode * rhs);

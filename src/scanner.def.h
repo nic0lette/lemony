@@ -31,12 +31,6 @@ public:
     }
 	
 	void reset() {
-		// Get rid of the old AST if there is one
-		if (astRoot != 0) {
-			astRoot->free();
-			delete astRoot;
-		}
-		
 		astRoot = 0;
 		curSym = "";
 		prevSym = "";

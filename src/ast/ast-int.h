@@ -13,7 +13,6 @@ using namespace std;
 
 class IntNode : public ValueNode {
 protected:
-	static const int _type = INT;
 	
 private:
 	long long _value;
@@ -24,6 +23,7 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
+	int type() { return INT; }
 	string nodeType() { return "int"; }
 	
 	long long getValue() { return _value; }
