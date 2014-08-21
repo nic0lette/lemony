@@ -49,7 +49,7 @@ int main() {
 		state.curSym = scanner.currentToken();
 		
 		// Parse the token
-        Parse(pParser, tokenID, yylval, &state);
+		Parse(pParser, tokenID, yylval, &state);
 		
 		if (state.astRoot != 0) {
 			if (!state.parseError) {
@@ -63,12 +63,12 @@ int main() {
 			 * Because we ate the token to eval the statement
 			 * we have to, essentially, parse it again
 			 */
-	        Parse(pParser, tokenID, yylval, &state);
+			Parse(pParser, tokenID, yylval, &state);
 		}
-    }
+	}
 	
 	// Add the final bit to the program
-    Parse(pParser, tokenID, yylval, &state);
+	Parse(pParser, tokenID, yylval, &state);
 	if (state.astRoot != 0) {
 		if (!state.parseError) {
 			program.push_back(state.astRoot);
