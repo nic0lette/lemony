@@ -4,14 +4,13 @@
 #include <iostream>
 
 #include "ast-types.h"
+#include "../symboltable.h"
 
 using namespace std;
 
 // Base class of all nodes in the tree
 class BaseNode {
 protected:
-	static const int _nodeType = VOID;
-	
 	// Is this node a temporary node (partial evaluation result)
 	int _temp;
 	void setTemp() { _temp = 1; }

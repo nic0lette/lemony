@@ -1,4 +1,15 @@
 #include "symboltable.h"
+#include "ast.h"
+
+// Static init
+SymbolTable * SymbolTable::_table = 0;
+
+// A new scope is actually simple. Create a new table, point at the current one
+// and you're done
+SymbolTable * SymbolTable::newScope() {
+	SymbolTable::_table = new SymbolTable(SymbolTable::_table);
+	return SymbolTable::_table;
+}
 
 IdentifierNode * SymbolTable::lookup(string symbol) {
 	IdentifierNode * sym = _symbols[symbol];

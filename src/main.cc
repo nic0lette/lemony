@@ -16,7 +16,6 @@ using namespace std;
 /*
  * GLOBALS
  */
-SymbolTable globalVars = SymbolTable();
 std::vector<BaseNode *> program = std::vector<BaseNode *>();
 
 void printResult(BaseNode * res) {
@@ -77,6 +76,9 @@ int main() {
 	
 	// Done with the parser
 	ParseFree(pParser, free);
+	
+	// initialize the global symbol table
+	SymbolTable::newScope();
 	
 	// Execute the program
 	for (std::vector<BaseNode *>::iterator statement = program.begin();

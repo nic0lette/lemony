@@ -1,4 +1,5 @@
 #include "ast-ident.h"
+#include "../symboltable.h"
 
 void IdentifierNode::type(LightweightTypeNode * type) {
 	_type = type->type();
@@ -9,29 +10,12 @@ string IdentifierNode::toString() {
 }
 
 BaseNode * IdentifierNode::eval() {
-	if (_value != 0) {
-		BaseNode * bn = _value->eval();
-		ValueNode * v = dynamic_cast<ValueNode *>(bn);
-		if (v != 0) {
-			if (v->type() == _type) {
-				return v;
-			} else {
-				return new ErrorNode("cannot assign type " + TYPE_NAMES[v->type()]
-					+ " to " + _name + " (" + type() + ")");
-			}
-		} else {
-			// Don't add to their misery by telling them they can't assign from an error ;)
-			ErrorNode * e = dynamic_cast<ErrorNode *>(bn);
-			if (e == 0) {
-				return new ErrorNode("cannot assign from " + bn->nodeType()
-					+ " to " + _name + " (" + type() + ")");
-			}
-		}
-		
-		// Probably an error. Likely. Almost certainly.
-		return bn;
+	if (SymbolTable::table()->install(this)) {
+		return new BaseNode();
 	} else {
-		return new ErrorNode("attempt to evaluate " + _name + " but it was never assigned");
+		IdentifierNode * c = SymbolTable::table()->lookup(_name);
+		return new ErrorNode("symbol already defined: " + _name
+			+ " : defined as a " + c->type());
 	}
 }
 
