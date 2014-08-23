@@ -12,11 +12,10 @@ protected:
 	
 public:
 	LightweightTypeNode(string);
-	int type() { return _type; }
+	string type() { return "lwtype"; }
+	int itype() { return _type; }
 	
 	string toString();
-	
-	string nodeType() { return "lwtype"; }
 };
 
 #endif

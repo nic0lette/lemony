@@ -9,9 +9,10 @@
 #define MUL 2
 #define DIV 3
 #define MOD 4
+#define ASSIGN 5
 
 // Operator "names"
-const char OP_NAMES[] = {'+', '-', '*', '/', '%'};
+const char OP_NAMES[] = {'+', '-', '*', '/', '%', '='};
 
 // Types
 #define VOID 0

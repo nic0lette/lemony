@@ -5,16 +5,22 @@
 
 #include "ast-base.h"
 #include "ast-value.h"
+#include "ast-ref.h"
+#include "ast-ident.h"
 #include "ast-error.h"
 
 class BinaryOpNode : public BaseNode {
+protected:
+	BaseNode * mathEval();
+	BaseNode * assignEval();
+	
 public:
 	int op;
 	BaseNode * lhs;
 	BaseNode * rhs;
 	
 	BinaryOpNode(int op, BaseNode * lhs, BaseNode * rhs) : op(op), lhs(lhs), rhs(rhs) {}
-	string nodeType() { return "[BinaryOpNode]"; }
+	string type() { return "binary-op"; }
 	
 	string toString();
 	

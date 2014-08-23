@@ -23,8 +23,8 @@ public:
 		if (t) BaseNode::setTemp();
 	}
 	
-	int type() { return INT; }
-	string nodeType() { return "int"; }
+	int itype() { return INT; }
+	string type() { return "int"; }
 	
 	long long getValue() { return _value; }
 	

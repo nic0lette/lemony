@@ -4,7 +4,6 @@
 #include <iostream>
 
 #include "ast-types.h"
-#include "../symboltable.h"
 
 using namespace std;
 
@@ -16,7 +15,7 @@ protected:
 	void setTemp() { _temp = 1; }
 	
 public:
-	BaseNode() : _temp(0) {};
+	BaseNode() : _temp(0) {}
 	virtual ~BaseNode() {}
 	
 	// Just returns whether a node is a temp node or not
@@ -24,13 +23,14 @@ public:
 	
 	virtual string toString();
 	
-	virtual string nodeType() { return "base"; }
+	virtual string type() { return "base"; }
+	virtual int itype() { return 0; }
 	
 	// Only needs to be defined by functions etc...
-	virtual BaseNode * eval() { return this; };
+	virtual BaseNode * eval() { return this; }
 	
 	// Normally there's nothing to do for free (only non-leaf children need it)
-	virtual void free() {};
+	virtual void free() {}
 };
 
 #endif

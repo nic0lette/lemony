@@ -20,6 +20,7 @@ public:
 	IdentifierNode(string name) : _name(name) {}
 	string name() { return _name; }
 	string type() { return TYPE_NAMES[_type]; }
+	int itype() { return _type; }
 	
 	void type(LightweightTypeNode *);
 	
@@ -28,7 +29,11 @@ public:
 	string toString();
 	string nodeType() { return "identifier"; }
 	
+	// Evaluating an identifier block installs it into the symbol table
 	BaseNode * eval();
+	
+	// This is the value of the node
+	BaseNode * value() { return _value; }
 	
 	// Normally there's nothing to do for free (only non-leaf children need it)
 	void free();

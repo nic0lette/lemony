@@ -2,5 +2,5 @@
 #include "ast-error.h"
 
 string BaseNode::toString() {
-	return "base:" + nodeType();
+	return "base:" + type();
 }

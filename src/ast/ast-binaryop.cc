@@ -19,6 +19,78 @@ void BinaryOpNode::free() {
 }
 
 BaseNode * BinaryOpNode::eval() {
+	switch(op) {
+		case ADD: // fall through
+		case SUB: // fall through
+		case MUL: // fall through
+		case DIV: // fall through
+		case MOD: return mathEval();
+		case ASSIGN: return assignEval();
+		default: return new ErrorNode("Internal error: unknown operator found in AST");
+	}
+}
+
+BaseNode * BinaryOpNode::assignEval() {
+	// For variable assignment
+	BaseNode * erhs = rhs->eval();
+	BaseNode * res;
+	
+	// At this point the lhs should be an identifier and the rhs a value
+	ReferenceNode * idRef = dynamic_cast<ReferenceNode *>(lhs);
+	ValueNode * val = dynamic_cast<ValueNode *>(erhs);
+	
+	if (idRef == 0) {
+		// Did we already get an error?
+		ErrorNode * err = dynamic_cast<ErrorNode *>(idRef);
+		if (err != 0) {
+			// Okay, they already have an error, so don't make a new one
+			if (erhs->isTemp()) delete erhs;
+			return err;
+		} else {
+			res = new ErrorNode(erhs->type() + " is not a valid lval");
+		}
+	}
+	if (val == 0) {
+		// Did we already get an error?
+		ErrorNode * err = dynamic_cast<ErrorNode *>(idRef);
+		if (err != 0) {
+			// Okay, they already have an error, so don't make a new one
+			return err;
+		} else {
+			res = new ErrorNode(erhs->type() + " is not a valid lval");
+		}
+	}
+	
+	// Everything okay?
+	if (idRef != 0 && val != 0) {
+		// Okay, so now that we have the reference to the real identifier, let's get the identifier
+		IdentifierNode * id = idRef->get();
+		
+		// Check that it worked
+		if (id == 0) {
+			if (erhs->isTemp()) delete erhs;
+			return new ErrorNode("failed to retrive identifier " + idRef->name());
+		}
+		
+		// Ensure the types match		
+		if (id->itype() != val->itype()) {
+			// Type mismatch
+			res = new ErrorNode("cannot assign value of type " + val->type() + " identifier of type "
+				+ id->type() + " (" + id->name() + ")");
+		} else {
+			// Yay! Do the assignment and return the value we have
+			id->assign(val);
+			res = val;
+		}
+	}
+	
+	// There's no way the lhs will need to be deleted unless the parser blew up
+	// since it *must* be either an IdentifierNode or an ErrorNode, neither of which
+	// we'll want to delete
+	return res;
+}
+
+BaseNode * BinaryOpNode::mathEval() {
 	// Evaluate the two operands
 	BaseNode * elhs = lhs->eval();
 	BaseNode * erhs = rhs->eval();

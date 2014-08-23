@@ -1,5 +1,6 @@
 %token_prefix TOKEN_
 
+%left ASSIGNMENT.
 %left ADD SUB.
 %left MUL DIV MOD.
 
@@ -13,21 +14,25 @@
 
 	BaseNode * createVariable(BaseNode *& type, BaseNode *& id) {
 		LightweightTypeNode * typeNode = dynamic_cast<LightweightTypeNode *>(type);
-		IdentifierNode * idNode = dynamic_cast<IdentifierNode *>(id);
+		ReferenceNode * refNode = dynamic_cast<ReferenceNode *>(id);
 	
-		if (typeNode != 0 || idNode != 0) {
+		if (typeNode != 0 || refNode != 0) {
 			// Okay, the world is sane
+			IdentifierNode * idNode = new IdentifierNode(refNode->name());
 			idNode->type(typeNode);
 		
 			// This is why I call it a "lightweight" type node - it's job is over
 			// (sorry little node)
 			delete type;
+			
+			// And, actually since we're creating an IdentifierNode, we don't need the ref either
+			delete id;
 		
 			// Send it back up
 			return idNode;
 		} else {
 			cerr << "internal compiler error: expected type/identifier node but found "
-				<< type->nodeType() << "/" << id->nodeType() << endl;
+				<< type->type() << "/" << id->type() << endl;
 		
 			// I don't even know... Make an error node?
 			delete type;
@@ -86,6 +91,10 @@ expr(A) ::= FLOAT(B). {
     A = B;
 }
 
+expr(A) ::= IDENTIFIER(B). {
+	A = B;
+}
+
 expr(A) ::= expr(B) ADD expr(C). {
     A = new BinaryOpNode(ADD, B, C);
 }
@@ -105,3 +114,6 @@ expr(A) ::= LPAREN expr(B) RPAREN. {
     A = B;
 }
 
+expr(A) ::= IDENTIFIER(B) ASSIGNMENT expr(C). {
+	A = new BinaryOpNode(ASSIGN, B, C);
+}

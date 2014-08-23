@@ -9,14 +9,13 @@
 class ValueNode : public BaseNode {
 
 public:
-	string nodeType() { return "value"; }
-	virtual int type() = 0;
+	string type() { return "value"; }
 
 	virtual BaseNode * add(ValueNode * rhs);
 	virtual BaseNode * sub(ValueNode * rhs);
 	virtual BaseNode * mul(ValueNode * rhs);
 	virtual BaseNode * div(ValueNode * rhs);
-	virtual BaseNode * mod(ValueNode * rhs);	
+	virtual BaseNode * mod(ValueNode * rhs);
 };
 
 #endif

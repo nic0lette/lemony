@@ -169,8 +169,8 @@ public:
 		return node;
 	}
 	
-	IdentifierNode * identifierNode() {
-		return new IdentifierNode(this->token());
+	ReferenceNode * identifierNode() {
+		return new ReferenceNode(this->token());
 	}
 	
     int scan(BaseNode * & yylval) {
