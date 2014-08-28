@@ -10,7 +10,7 @@ using namespace std;
 #define DEBUG 0
 
 int main() {
-    BaseNode * yylval;
+    YYSTYPE yylval;
     Scanner scanner(&std::cin);
     void * pParser = ParseAlloc(malloc);
     int tokenID;
@@ -24,29 +24,22 @@ int main() {
 	// initialize state
 	state.eval = 0;
 	
-    // scanner.scan return 0 when get EOF.
-    while ((tokenID = scanner.scan(yylval)) != 0) {
-        Parse(pParser, tokenID, yylval, &state);
+    // because do...while() loops are evil for some reason... idek
+	while (true) {
+		tokenID = scanner.scan(yylval);
+		Parse(pParser, tokenID, yylval, &state);
 		
+		// Next statement?
 		if (state.eval) {
-			state.result->printNode();
-			
-			state.eval = 0;
-			state.result = 0;
-			
-			/*
-			 * Because we ate the token to eval the statement
-			 * we have to, essentially, parse it again
-			 */
-	        Parse(pParser, tokenID, yylval, &state);
+			// Reparse that last token
+			Parse(pParser, tokenID, yylval, &state);
+			state.eval = false;
 		}
-    }
 
-    Parse(pParser, tokenID, yylval, &state);
-	if (state.result == 0) {
-		cout << "Our result is null?" << endl;
-	} else {
-		state.result->printNode();
+		// end of the input stream?
+		if (tokenID == 0) {
+			break;
+		}
 	}
 	
 	ParseFree(pParser, free);

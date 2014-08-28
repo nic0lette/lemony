@@ -9,7 +9,7 @@ lemony: scanner.h parser.c main.cc
 parser.c: parser.yy scanner.h
 	lemon parser.yy
 
-scanner.h: scanner.re scanner.def.h astnode.h
+scanner.h: scanner.re scanner.def.h
 	re2c scanner.re > scanner.h
 
 clean:

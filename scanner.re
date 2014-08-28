@@ -126,7 +126,7 @@ public:
 		return value;
 	}
 	
-    int scan(BaseNode * & yylval) {
+    int scan(YYSTYPE& yylval) {
 		std:
         m_token = m_cursor;
  
@@ -142,21 +142,28 @@ public:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
-        INTEGER                = [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
-        WS                     = [ \r\n\t\f];
-        ANY_CHARACTER          = [^];
-
-        INTEGER {
-			yylval = new PrimitiveValueNode(INT, this->intToken());
+		DEF					= "def";
+/*		SYM					= [_,A-Z,a-z]*;*/
+        INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
+		NEWLINE				= [\n];
+        WS					= [ \r\t\f];
+        ANY_CHARACTER		= [^];
+		
+/*		SYM {
+			return TOKEN_SYM;
+		}
+*/        INTEGER {
+			yylval.int_value = intToken();
 			return TOKEN_INT;
 		}
+		NEWLINE { std::cout << "NEWLINE" << std::endl; return TOKEN_NEWLINE; }
         "+" { return TOKEN_ADD; }
         "-" { return TOKEN_SUB; }
         "*" { return TOKEN_MUL; }
         "/" { return TOKEN_DIV; }
         "(" { return TOKEN_LPAREN; }
         ")" { return TOKEN_RPAREN; }
-		";" { return TOKEN_SEMI; }
+/*		"->" { return TOKEN_MAPS; }*/
         WS {
             goto std;
         }
