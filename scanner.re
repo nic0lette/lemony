@@ -77,7 +77,7 @@ public:
             m_buffer = newBuffer;
         } else {
             // move remained data to head.
-            for (int i = 0; i < restSize; ++i) { //memmove( m_buffer, m_token, (restSize)*sizeof(char) );
+            for (int i = 0; i < restSize; ++i) {
                 *(m_buffer + i) = *(m_token + i);
             }
             m_cursor = m_buffer + (m_cursor-m_token);
@@ -129,28 +129,42 @@ public:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
+		FUNC				= "f";
 		DEF					= "def";
-/*		SYM					= [_,A-Z,a-z]*;*/
+		SYM					= [_,A-Z,a-z]*;
         INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
 		NEWLINE				= [\n];
         WS					= [ \r\t\f];
         ANY_CHARACTER		= [^];
 		
-/*		SYM {
+		// keywords
+		DEF { return TOKEN_DEF; }
+		FUNC { return TOKEN_FUNCTION; }
+		
+		// Symbol
+		SYM {
 			return TOKEN_SYM;
 		}
-*/        INTEGER {
+		
+		// Values
+        INTEGER {
 			yylval.int_value = intToken();
 			return TOKEN_INT;
 		}
-		NEWLINE { return TOKEN_NEWLINE; }
+		
+		// Operators
         "+" { return TOKEN_ADD; }
         "-" { return TOKEN_SUB; }
         "*" { return TOKEN_MUL; }
         "/" { return TOKEN_DIV; }
         "(" { return TOKEN_LPAREN; }
         ")" { return TOKEN_RPAREN; }
-/*		"->" { return TOKEN_MAPS; }*/
+		"->" { return TOKEN_MAPS; }
+		":" { return TOKEN_COLON; }
+		"," { return TOKEN_COMMA; }
+		
+		// Misc.
+		NEWLINE { return TOKEN_NEWLINE; }
         WS {
             goto std;
         }

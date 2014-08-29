@@ -31,9 +31,12 @@ int main() {
 		
 		// Next statement?
 		if (state.eval) {
+			// Mark end of parsed block
+			std::cout << "------------------------------" << std::endl;
+			
 			// Reparse that last token
-			Parse(pParser, tokenID, yylval, &state);
 			state.eval = false;
+			Parse(pParser, tokenID, yylval, &state);
 		}
 
 		// end of the input stream?

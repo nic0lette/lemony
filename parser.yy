@@ -25,32 +25,82 @@
 program ::= . {
 	// This should just be the EOF
 	// Also it seems like we should be able to do this better =/
-}
-
-program ::= expr(A) NEWLINE. {
-    state->result = A;
+	std::cout << "Reduce: empty program" << std::endl;
 	state->eval = true;
-
-	std::cout << "Result: " << A.int_value << std::endl;
 }
 
-expr(A) ::= INT(B). {
-    A = B;
+program ::= function NEWLINE. {
+	std::cout << "Reduce: program" << std::endl;
+	state->eval = true;
 }
 
-expr(A) ::= expr(B) ADD expr(C). {
-    A.int_value = B.int_value + C.int_value;
-}
-expr(A) ::= expr(B) SUB expr(C). {
-    A.int_value = B.int_value - C.int_value;
-}
-expr(A) ::= expr(B) MUL expr(C). {
-    A.int_value = B.int_value * C.int_value;
-}
-expr(A) ::= expr(B) DIV expr(C). {
-    A.int_value = B.int_value / C.int_value;
+program ::= named_function NEWLINE. {
+	std::cout << "Reduce: program" << std::endl;
+	state->eval = true;
 }
 
-expr(A) ::= LPAREN expr(B) RPAREN. {
-    A = B;
+named_function ::= DEF SYM MAPS function. {
+	std::cout << "Reduce: named function" << std::endl;
+}
+
+function ::= FUNCTION LPAREN arguments_list RPAREN COLON expr. {
+	std::cout << "Reduce: function" << std::endl;
+}
+
+function ::= FUNCTION LPAREN arguments_list RPAREN COLON NEWLINE expr. {
+	std::cout << "Reduce: function" << std::endl;
+}
+
+arguments_list ::= . {
+	std::cout << "Reduce: empty arguments_list" << std::endl;
+}
+
+arguments_list ::= SYM arguments_cont. {
+	std::cout << "Reduce: arguments_list" << std::endl;
+}
+
+arguments_cont ::= . {
+	std::cout << "Reduce: empty arguments_cont" << std::endl;
+}
+
+arguments_cont ::= COMMA SYM arguments_cont. {
+	std::cout << "Reduce: arguments_cont" << std::endl;
+}
+
+// Functions are first class =)
+// expr ::= function. {
+	// std::cout << "Reduce: function as expr" << std::endl;
+// }
+
+// Operators
+expr ::= expr ADD expr. {
+	std::cout << "Reduce: + operator" << std::endl;
+}
+expr ::= expr SUB expr. {
+	std::cout << "Reduce: - operator" << std::endl;
+}
+expr ::= expr MUL expr. {
+	std::cout << "Reduce: * operator" << std::endl;
+}
+expr ::= expr DIV expr. {
+	std::cout << "Reduce: / operator" << std::endl;
+}
+expr ::= LPAREN expr RPAREN. {
+	std::cout << "Reduce: parens" << std::endl;
+}
+
+// Unary +/-
+expr ::= SUB expr. {
+	std::cout << "Reduce: negative constant value" << std::endl;
+}
+expr ::= ADD expr. {
+	std::cout << "Reduce: explicit positive constant value" << std::endl;
+}
+
+// Base symbols
+expr ::= INT. {
+	std::cout << "Reduce: constant value" << std::endl;
+}
+expr ::= SYM. {
+	std::cout << "Reduce: named value" << std::endl;
 }
