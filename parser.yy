@@ -29,11 +29,6 @@ program ::= . {
 	state->eval = true;
 }
 
-program ::= function NEWLINE. {
-	std::cout << "Reduce: program" << std::endl;
-	state->eval = true;
-}
-
 program ::= named_function NEWLINE. {
 	std::cout << "Reduce: program" << std::endl;
 	state->eval = true;
@@ -48,6 +43,14 @@ function ::= FUNCTION LPAREN arguments_list RPAREN COLON expr. {
 }
 
 function ::= FUNCTION LPAREN arguments_list RPAREN COLON NEWLINE expr. {
+	std::cout << "Reduce: function" << std::endl;
+}
+
+function ::= FUNCTION LPAREN arguments_list RPAREN COLON function. {
+	std::cout << "Reduce: function" << std::endl;
+}
+
+function ::= FUNCTION LPAREN arguments_list RPAREN COLON NEWLINE function. {
 	std::cout << "Reduce: function" << std::endl;
 }
 
@@ -66,11 +69,6 @@ arguments_cont ::= . {
 arguments_cont ::= COMMA SYM arguments_cont. {
 	std::cout << "Reduce: arguments_cont" << std::endl;
 }
-
-// Functions are first class =)
-// expr ::= function. {
-	// std::cout << "Reduce: function as expr" << std::endl;
-// }
 
 // Operators
 expr ::= expr ADD expr. {
