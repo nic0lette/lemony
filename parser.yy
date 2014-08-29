@@ -13,16 +13,18 @@
 }
 
 %syntax_error {
-    fprintf(stderr, "Syntax error\n");
+    std::cerr << "Syntax error" << std::endl;
 }
 
 %parse_failure {
-    fprintf(stderr,"Giving up.  Parser is hopelessly lost...\n");
+    std::cerr << "Giving up.  Parser is hopelessly lost..." << std::endl;
 }
 
 %start_symbol program
 
 program ::= . {
+	// This should just be the EOF
+	// Also it seems like we should be able to do this better =/
 }
 
 program ::= expr(A) NEWLINE. {

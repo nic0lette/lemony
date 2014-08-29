@@ -97,13 +97,6 @@ public:
         return std::string(m_token, m_token + length());
     }
 	
-	char * textAsChar() {
-		char * a = new char[length() + 1];
-		a[length()] = '\0';
-		memcpy(a, m_token, length());
-		return a;
-	}
-    
 	int length() {
         return (m_cursor-m_token);
     }
@@ -113,14 +106,8 @@ public:
     }
 	
 	int intToken() {
-		// Convert the string token to a char[]
-		char * token = this->textAsChar();
-		
-		// Parse the hex value
-        int value = (int)strtol(token, NULL, 0);
-		
-		// Free the memory and return the token
-		delete [] token;
+		// Parse the token value
+        int value = (int)strtol(text().c_str(), NULL, 0);
 		
 		// Done!
 		return value;
