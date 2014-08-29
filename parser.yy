@@ -35,28 +35,22 @@ program ::= expr(A) NEWLINE. {
 }
 
 expr(A) ::= INT(B). {
-	std::cout << "Reduce: INT" << std::endl;
     A = B;
 }
 
 expr(A) ::= expr(B) ADD expr(C). {
-	std::cout << "Reduce: ADD" << std::endl;
     A.int_value = B.int_value + C.int_value;
 }
 expr(A) ::= expr(B) SUB expr(C). {
-	std::cout << "Reduce: SUB" << std::endl;
     A.int_value = B.int_value - C.int_value;
 }
 expr(A) ::= expr(B) MUL expr(C). {
-	std::cout << "Reduce: MUL" << std::endl;
     A.int_value = B.int_value * C.int_value;
 }
 expr(A) ::= expr(B) DIV expr(C). {
-	std::cout << "Reduce: DIV" << std::endl;
     A.int_value = B.int_value / C.int_value;
 }
 
 expr(A) ::= LPAREN expr(B) RPAREN. {
-	std::cout << "Reduce: PARENS" << std::endl;
     A = B;
 }

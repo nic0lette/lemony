@@ -143,7 +143,7 @@ public:
 			yylval.int_value = intToken();
 			return TOKEN_INT;
 		}
-		NEWLINE { std::cout << "NEWLINE" << std::endl; return TOKEN_NEWLINE; }
+		NEWLINE { return TOKEN_NEWLINE; }
         "+" { return TOKEN_ADD; }
         "-" { return TOKEN_SUB; }
         "*" { return TOKEN_MUL; }
