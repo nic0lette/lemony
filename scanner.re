@@ -26,12 +26,13 @@ private:
 	char* m_token;
 	char* m_marker;
 	int m_buffer_size;
-	
-	// State for the parser
 	int m_lineno;
-	string m_current_token;
  
 public:
+
+    void increment_line_number() {
+        m_lineno++;
+    }
 
     Scanner( std::istream *ifs_, int init_size = 1024 )
         : m_buffer(0)
@@ -41,7 +42,6 @@ public:
         , m_marker(0)
         , m_buffer_size(init_size)
         , m_lineno(1)
-		, m_current_token("")
     {
         m_buffer = new char[m_buffer_size];
         m_cursor = m_limit = m_token = m_marker = m_buffer;
@@ -77,7 +77,7 @@ public:
             m_buffer = newBuffer;
         } else {
             // move remained data to head.
-            for (int i = 0; i < restSize; ++i) {
+            for (int i = 0; i < restSize; ++i) { //memmove( m_buffer, m_token, (restSize)*sizeof(char) );
                 *(m_buffer + i) = *(m_token + i);
             }
             m_cursor = m_buffer + (m_cursor-m_token);
@@ -93,90 +93,43 @@ public:
         return true;
     }
  
-	string token() {
+    std::string text() {
+        return std::string(m_token, m_token + length());
+    }
+	
+	char * textAsChar() {
 		char * a = new char[length() + 1];
 		a[length()] = '\0';
 		memcpy(a, m_token, length());
-		string t = string(a);
-		delete[] a;
-		
-		// Save the token before returning
-		m_current_token = t;
-		return t;
+		return a;
 	}
     
 	int length() {
         return (m_cursor-m_token);
     }
     
-    void increment_line_number() {
-        m_lineno++;
-    }
-
 	int lineno() {
         return m_lineno;
     }
 	
-	int setAndReturn(char token, int ttype) {
-		char * t = new char[2];
-		t[0] = token;
-		t[1] = '\0';
-		m_current_token = t;
-		
-		return ttype;
-	}
-	
-	string currentToken() {
-		return m_current_token;
-	}
-	
-	IntNode * intToken() {
+	int intToken() {
 		// Convert the string token to a char[]
-		string t = this->token();
+		char * token = this->textAsChar();
 		
-		// Parse the value
-        int value = (int)strtol(t.c_str(), NULL, 0);
+		// Parse the hex value
+        int value = (int)strtol(token, NULL, 0);
 		
-		// Done! (t will be freed elsewhere)
-		return new IntNode(value);
+		// Free the memory and return the token
+		delete [] token;
+		
+		// Done!
+		return value;
 	}
 	
-	FloatNode * floatToken() {
-		// Convert the string token to a char[]
-		string t = this->token();
-		
-		// Parse the value
-		double value;
-		char extra[t.length()];
-		int success = sscanf(t.c_str(), "%lg%s", &value, (char *) &extra);
-		
-		// Done! (t will be freed elsewhere)
-		if (success == 1) {
-			return new FloatNode(value);
-		} else {
-			return 0;
-		}
-	}
-	
-	LightweightTypeNode * lwTypeNode() {
-		// Convert the string token to a char[]
-		string t = this->token();
-
-		// Create the new node and free the string
-		LightweightTypeNode * node = new LightweightTypeNode(t);
-		
-		// Done! (t will be freed elsewhere)
-		return node;
-	}
-	
-	ReferenceNode * identifierNode() {
-		return new ReferenceNode(this->token());
-	}
-	
-    int scan(BaseNode * & yylval) {
+    int scan(YYSTYPE& yylval) {
 		std:
         m_token = m_cursor;
-		
+ 
     /*!re2c
         re2c:define:YYCTYPE = "char";
         re2c:define:YYCURSOR = m_cursor;
@@ -189,47 +142,28 @@ public:
         re2c:indent:top = 2;
         re2c:indent:string="    ";
 
-		TYPE				= "void"|"int"|"float"|"bool"|"string";
-		IDENTIFIER			= [A-Z,a-z]|[A-Z,a-z][A-Z,a-z,0-9,_]*;
+		DEF					= "def";
+/*		SYM					= [_,A-Z,a-z]*;*/
         INTEGER				= [0][0-7]*|[1-9][0-9]*|[0][x][0-9,a-f,A-F]*;
-		FLOAT				= [0-9,\.][0-9,e,E,\.]*;
-        WS					= [ \t\f];
-		NEW_LINE			= [\n][\r]|[\r][\n]|[\n];
+		NEWLINE				= [\n];
+        WS					= [ \r\t\f];
         ANY_CHARACTER		= [^];
-
-		TYPE {
-			yylval = lwTypeNode();
-			return TOKEN_TYPE;
+		
+/*		SYM {
+			return TOKEN_SYM;
 		}
-		IDENTIFIER {
-			yylval = identifierNode();
-			return TOKEN_IDENTIFIER;
-		}
-        INTEGER {
-			yylval = intToken();
+*/        INTEGER {
+			yylval.int_value = intToken();
 			return TOKEN_INT;
 		}
-		FLOAT {
-			yylval = floatToken();
-			if (yylval == 0) {
-				printf("malformed floating point value: '%s'\n", m_current_token.c_str());
-				goto std;
-			}
-			return TOKEN_FLOAT;
-		}
-		"=" { return setAndReturn('=', TOKEN_ASSIGNMENT); }
-        "+" { return setAndReturn('+', TOKEN_ADD); }
-        "-" { return setAndReturn('-', TOKEN_SUB); }
-        "*" { return setAndReturn('*', TOKEN_MUL); }
-        "/" { return setAndReturn('/', TOKEN_DIV); }
-		"%" { return setAndReturn('%', TOKEN_MOD); }
-        "(" { return setAndReturn('(', TOKEN_LPAREN); }
-        ")" { return setAndReturn(')', TOKEN_RPAREN); }
-		";" { return setAndReturn(';', TOKEN_SEMI); }
-		NEW_LINE {
-			increment_line_number();
-			goto std;
-		}
+		NEWLINE { std::cout << "NEWLINE" << std::endl; return TOKEN_NEWLINE; }
+        "+" { return TOKEN_ADD; }
+        "-" { return TOKEN_SUB; }
+        "*" { return TOKEN_MUL; }
+        "/" { return TOKEN_DIV; }
+        "(" { return TOKEN_LPAREN; }
+        ")" { return TOKEN_RPAREN; }
+/*		"->" { return TOKEN_MAPS; }*/
         WS {
             goto std;
         }
