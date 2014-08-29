@@ -29,13 +29,17 @@ program ::= . {
 	state->eval = true;
 }
 
-program ::= named_function NEWLINE. {
+program ::= declaration NEWLINE. {
 	std::cout << "Reduce: program" << std::endl;
 	state->eval = true;
 }
 
-named_function ::= DEF SYM MAPS function. {
-	std::cout << "Reduce: named function" << std::endl;
+declaration ::= DEF SYM MAPS function. {
+	std::cout << "Reduce: declaration" << std::endl;
+}
+
+declaration ::= DEF SYM MAPS expr. {
+	std::cout << "Reduce: declaration" << std::endl;
 }
 
 function ::= FUNCTION LPAREN arguments_list RPAREN COLON expr. {
