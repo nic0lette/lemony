@@ -1,21 +1,15 @@
 #ifndef CALC_SCANNER_H_
 #define CALC_SCANNER_H_
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <string>
-#include <sstream>
-#include <vector>
 #include <iostream>
-#include <fstream>
+#include <string>
 #include "scanner.def.h"
 #include "parser.h"
 
 class Scanner {
 private:
 	// iostream sucks. very slow.
-	std::istream *ifs;
+	std::istream * m_ifs;
  
 	// buffer memory
 	char* m_buffer;
@@ -34,7 +28,7 @@ public:
         m_lineno++;
     }
 
-    Scanner( std::istream *ifs_, int init_size = 1024 )
+    Scanner(std::istream * ifs, int init_size = 1024)
         : m_buffer(0)
         , m_cursor(0)
         , m_limit(0)
@@ -42,10 +36,10 @@ public:
         , m_marker(0)
         , m_buffer_size(init_size)
         , m_lineno(1)
+		, m_ifs(ifs)
     {
         m_buffer = new char[m_buffer_size];
         m_cursor = m_limit = m_token = m_marker = m_buffer;
-        ifs = ifs_;
     }
  
     ~Scanner() {
@@ -55,20 +49,18 @@ public:
     bool fill(int n) {
  
         // is eof?
-        if (ifs->eof()) {
+        if (m_ifs->eof()) {
             if ((m_limit-m_cursor) <= 0) {
                 return false;
             }
         }
  
         int restSize = m_limit-m_token;
-        if (restSize+n >= m_buffer_size) {
+        if (restSize + n >= m_buffer_size) {
             // extend buffer
             m_buffer_size *= 2;
             char* newBuffer = new char[m_buffer_size];
-            for (int i = 0; i < restSize; ++i) { // memcpy
-                *(newBuffer + i) = *(m_token + i);
-            }
+			memcpy(newBuffer, m_token, restSize);
             m_cursor = newBuffer + (m_cursor-m_token);
             m_token = newBuffer;
             m_limit = newBuffer + restSize;
@@ -77,9 +69,7 @@ public:
             m_buffer = newBuffer;
         } else {
             // move remained data to head.
-            for (int i = 0; i < restSize; ++i) {
-                *(m_buffer + i) = *(m_token + i);
-            }
+			memcpy(m_buffer, m_token, restSize);
             m_cursor = m_buffer + (m_cursor-m_token);
             m_token = m_buffer;
             m_limit = m_buffer+restSize;
@@ -87,9 +77,10 @@ public:
  
         // fill to buffer
         int read_size = m_buffer_size - restSize;
-        ifs->read(m_limit, read_size);
-        m_limit += ifs->gcount();
- 
+        m_ifs->read(m_limit, read_size);
+        m_limit += m_ifs->gcount();
+
+		// done
         return true;
     }
  

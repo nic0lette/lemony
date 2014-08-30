@@ -1,51 +1,72 @@
 #include <iostream>
 #include <sstream>
+#include <algorithm>
+#include <iterator>
 #include <cassert>
 #include <cstdlib>
 #include "scanner.h"
 #include "parser.c"
 
-using namespace std;
-
 #define DEBUG 0
 
+// Basically, let's convert a (likely) file based istream to a stringstream based one
+std::stringstream * sstream(std::istream * in) {
+	// We need it to be a pointer to a stream because the copy constructor is private
+	// ... seriously.
+	std::stringstream * str = new std::stringstream();
+	
+	// Copy the istream into our stringstream
+	copy(std::istreambuf_iterator<char>(*in),
+		std::istreambuf_iterator<char>(),
+		std::ostreambuf_iterator<char>(*str));
+		
+	// Because our language needs to have a newline at the end, just... add one (just in case)
+	// This kind of bothers me, actually... there should be a way to do this with lemon =/
+	str->put('\n');
+	
+	return str;
+}
+
+// Let's create a string stream!
 int main() {
     YYSTYPE yylval;
-    Scanner scanner(&std::cin);
+
+	// Let's convert from stdin (boo!) to our own stream (yay!)
+	std::iostream * stream = sstream(&std::cin);
+	Scanner scanner(stream);
+	
+	// Let's parse!
     void * pParser = ParseAlloc(malloc);
     int tokenID;
-
-#if 0
-    ParseTrace(stderr, (char*)"[Parser] >> ");
-#endif
 
     ParserState state;
 	
 	// initialize state
 	state.eval = 0;
 	
-    // because do...while() loops are evil for some reason... idek
-	while (true) {
+	do {
+		// Get the next token
 		tokenID = scanner.scan(yylval);
+		
+		// Parse the token		
 		Parse(pParser, tokenID, yylval, &state);
 		
-		// Next statement?
+		// Done with this statement?
 		if (state.eval) {
-			// Mark end of parsed block
-			std::cout << "------------------------------" << std::endl;
-			
-			// Reparse that last token
+			// Yup! Statement complete
 			state.eval = false;
-			Parse(pParser, tokenID, yylval, &state);
+			
+			// Only reparse the token if it wasn't EOF?
+			if (tokenID != 0) {
+				Parse(pParser, tokenID, yylval, &state);
+			}
 		}
-
-		// end of the input stream?
-		if (tokenID == 0) {
-			break;
-		}
-	}
+	} while (tokenID != 0);
 	
+	// And cleanup everything
 	ParseFree(pParser, free);
+	delete stream;
+	
     return 0;
 }
 

@@ -4,5 +4,6 @@ def yup -> f():
 def me -> f():
 	(4 - 2) * 3
 def params -> f(x,y): -((x + y) * -2)
+def lala -> 4
 def some -> f(x):
 	f(n): x * 2
